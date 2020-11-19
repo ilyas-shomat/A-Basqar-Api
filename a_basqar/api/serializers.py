@@ -20,12 +20,19 @@ class StoreSerializer(serializers.ModelSerializer):
 
 # Working code
 class AccountSerializer(serializers.ModelSerializer):
+    store = StoreSerializer()
+    company = CompanySerializer(read_only=True)
+
 
     class Meta:
         model = models.Account
         fields = "__all__"
         extra_kwargs = {
-            'password': {'write_only':True}
+            'password': {'write_only':True},
+            'is_admin': {'write_only': True},
+            'is_active': {'write_only': True},
+            'is_staff': {'write_only': True},
+            'is_superuser': {'write_only': True},
         }
 
 # class AccountSerializer(serializers.ModelSerializer):

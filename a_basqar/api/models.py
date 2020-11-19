@@ -1,15 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+
+
 # Create your models here.
 
 
 class MyAccountManager(BaseUserManager):
-    def create_user(self, username, email, full_name, password, status):
+    def create_user(self, username, full_name, password, status):
         if not username:
             raise ValueError("User must have username")
 
         user = self.model(
-            email=self.normalize_email(email),
+            # email=self.normalize_email(email),
             username=username,
         )
 
@@ -17,9 +19,9 @@ class MyAccountManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, email, full_name, password, status):
+    def create_superuser(self, username, full_name, password, status):
         user = self.create_user(
-            email=self.normalize_email(email),
+            # email=self.normalize_email(email),
             password=password,
             username=username,
             full_name=full_name,
@@ -30,6 +32,7 @@ class MyAccountManager(BaseUserManager):
         user.is_superuser = True
         user.save(using=self._db)
         return user
+
 
 class Company(models.Model):
     company_id = models.AutoField(primary_key=True)
@@ -50,7 +53,7 @@ class Store(models.Model):
 
 
 class Account(AbstractBaseUser):
-    email = models.EmailField(verbose_name="email", max_length=60, unique=True)
+    # email = models.EmailField(verbose_name="email", max_length=60, unique=True)
     account_id = models.AutoField(primary_key=True)
     full_name = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
@@ -65,9 +68,8 @@ class Account(AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
-
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email', 'full_name', 'password', 'status',]
+    REQUIRED_FIELDS = ['full_name', 'password', 'status']
 
     objects = MyAccountManager()
 
