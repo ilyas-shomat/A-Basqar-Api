@@ -1,6 +1,7 @@
 from rest_framework import viewsets, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from .models import Company, Store, Account
 from .serializers import StoreSerializer, CompanySerializer, AccountSerializer
 from rest_framework.authtoken.models import Token
@@ -15,22 +16,47 @@ class StoreViewSet(viewsets.ModelViewSet):
     queryset = Store.objects.all()
     serializer_class = StoreSerializer
 
+
 # @api_view(["POST"])
 # def login(request):
 
 # ----------------COMMON-----------------------
+
 @api_view(["GET"])
+@permission_classes((IsAuthenticated,))
 def get_all_accounts(request):
     accounts = Account.objects.all()
     ser = AccountSerializer(accounts, many=True)
     return Response(ser.data)
 
 
+# ---------------- AUTH -----------------------
 
-# ----------------LOGIN-----------------------
+@api_view(["POST"])
+def post_one_account(request):
+    if request.method == 'POST':
+        ser = AccountSerializer(data=request.data)
+        data = {}
+        if ser.is_valid():
+            account = ser.save()
+            data['reponse'] = 'success'
+            data['full_name'] = account.full_name
+            data['token'] = Token.objects.get(user=account).key
+        else:
+            data = ser.errors
+        return Response(data)
 
 
 # ----------------PROFILE-----------------------
+
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_profile_info(request):
+    user = request.user # Gives me a user which made request
+    # print("------------"+str(user.password))
+    account = Account.objects.get(account_id=user.account_id)
+    ser = AccountSerializer(account)
+    return Response(ser.data)
 
 @api_view(["GET"])
 def get_one_account(request, account_id):
@@ -38,13 +64,13 @@ def get_one_account(request, account_id):
     ser = AccountSerializer(account)
     return Response(ser.data)
 
+
 @api_view(["PUT"])
 def put_one_account(request, account_id):
-
     try:
         account = Account.objects.get(account_id=account_id)
     except Account.DoesNotExixt:
-        return  Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "PUT":
         ser = AccountSerializer(account, data=request.data)
@@ -55,22 +81,23 @@ def put_one_account(request, account_id):
             return Response(data=data)
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(["DELETE"])
 def delete_one_account(request, account_id):
-
     try:
         account = Account.objects.get(account_id=account_id)
     except Account.DoesNotExixt:
-        return  Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "DELETE":
-        operation  = account.delete()
+        operation = account.delete()
         data = {}
         if operation:
             data["status"] = "delete success"
         else:
             data["status"] = "delete failed"
         return Response(data=data)
+
 
 # Working code
 # @api_view(["POST"])
@@ -89,22 +116,6 @@ def delete_one_account(request, account_id):
 #         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-@api_view(["POST"])
-def post_one_account(request):
-
-    if request.method == 'POST':
-        ser = AccountSerializer(data=request.data)
-        data = {}
-        if ser.is_valid():
-            account = ser.save()
-            data['reponse'] = 'success'
-            data['full_name'] = account.full_name
-            data['token'] = Token.objects.get(user=account).key
-        else:
-            data = ser.errors
-        return Response(data)
-
 # ---------------- EXPORT PRODUCTS --------------
 
 
@@ -113,9 +124,6 @@ def get_post_companies(request):
     companies = Company.objects.all()
     ser = CompanySerializer(companies, many=True)
     return Response(ser.data)
-
-
-
 
 
 @api_view(["GET"])
