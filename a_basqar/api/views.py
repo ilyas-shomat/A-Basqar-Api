@@ -3,8 +3,15 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Company, Store, Account
-from .serializers import StoreSerializer, CompanySerializer, AccountSerializer
+from .serializers import (StoreSerializer,
+                          CompanySerializer,
+                          AccountSerializer,
+                          AccountPropertiesSerializer,
+                          ChangePasswordSerializer)
 from rest_framework.authtoken.models import Token
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.generics import UpdateAPIView
+
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
@@ -52,28 +59,32 @@ def post_one_account(request):
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def get_profile_info(request):
-    user = request.user # Gives me a user which made request
+    user = request.user  # Gives me a user which made request
     # print("------------"+str(user.password))
     account = Account.objects.get(account_id=user.account_id)
     ser = AccountSerializer(account)
     return Response(ser.data)
 
-@api_view(["GET"])
-def get_one_account(request, account_id):
-    account = Account.objects.get(account_id=account_id)
-    ser = AccountSerializer(account)
-    return Response(ser.data)
+
+# @api_view(["GET"])
+# def get_one_account(request, account_id):
+#     account = Account.objects.get(account_id=account_id)
+#     ser = AccountSerializer(account)
+#     return Response(ser.data)
 
 
 @api_view(["PUT"])
-def put_one_account(request, account_id):
+@permission_classes((IsAuthenticated,))
+def put_one_account(request):
+    user = request.user
     try:
-        account = Account.objects.get(account_id=account_id)
+        account = Account.objects.get(account_id=user.account_id)
     except Account.DoesNotExixt:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "PUT":
-        ser = AccountSerializer(account, data=request.data)
+        print("--------account" + str(account))
+        ser = AccountPropertiesSerializer(account, data=request.data, partial=True)
         data = {}
         if ser.is_valid():
             ser.save()
@@ -134,3 +145,36 @@ def get_stores(request, company_id):
     ser = StoreSerializer(stores, many=True)
     str = request.data.get("store")
     return Response(ser.data)
+
+
+class ChangePasswordView(UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    model = Account
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # Check old password
+            if not self.object.check_password(serializer.data.get("old_password")):
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+
+            # confirm the new passwords match
+            new_password = serializer.data.get("new_password")
+            confirm_new_password = serializer.data.get("confirm_new_password")
+            if new_password != confirm_new_password:
+                return Response({"new_password": ["New passwords must match"]}, status=status.HTTP_400_BAD_REQUEST)
+
+            # set_password also hashes the password that the user will get
+            self.object.set_password(serializer.data.get("new_password"))
+            self.object.save()
+            return Response({"response": "successfully changed password"}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

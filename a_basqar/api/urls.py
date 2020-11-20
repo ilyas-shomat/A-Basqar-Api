@@ -7,7 +7,6 @@ urlpatterns = [
 
 
     path('accounts/delete/<int:account_id>', views.delete_one_account, name="account_delete"),
-    path('accounts/update/<int:account_id>', views.put_one_account, name="account_update"),
 
     ############ Common #############
     path('companies/', views.get_post_companies, name="get_all_companies"),
@@ -18,6 +17,8 @@ urlpatterns = [
     path('accounts/create/', views.post_one_account, name="account_create"),
 
     ############ Profile #############
-    path('profile', views.get_profile_info, name="profile")
+    path('profile', views.get_profile_info, name="profile"),
+    path('profile/update', views.put_one_account, name="profile_update"),
+    path('change_password', views.ChangePasswordView.as_view(), name="change_password"),
 
 ]

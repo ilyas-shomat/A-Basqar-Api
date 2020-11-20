@@ -37,7 +37,6 @@ class StoreSerializer(serializers.ModelSerializer):
 #         }
 
 class AccountSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.Account
         fields = "__all__"
@@ -59,3 +58,22 @@ class AccountSerializer(serializers.ModelSerializer):
         account.set_password(password)
         account.save()
         return account
+
+
+class AccountPropertiesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Account
+        fields = "__all__"
+        extra_kwargs = {
+            # 'password': {'write_only':True},
+            'is_admin': {'write_only': True},
+            'is_active': {'write_only': True},
+            'is_staff': {'write_only': True},
+            'is_superuser': {'write_only': True},
+        }
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_new_password = serializers.CharField(required=True)
