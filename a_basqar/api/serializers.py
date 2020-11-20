@@ -20,8 +20,8 @@ class StoreSerializer(serializers.ModelSerializer):
 
 # Working code
 class AccountSerializer(serializers.ModelSerializer):
-    store = StoreSerializer()
-    company = CompanySerializer(read_only=True)
+    # store = StoreSerializer()
+    # company = CompanySerializer(read_only=True)
 
 
     class Meta:
