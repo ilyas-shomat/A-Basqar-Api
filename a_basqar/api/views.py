@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Company, Store, Account
 from .serializers import StoreSerializer, CompanySerializer, AccountSerializer
+from rest_framework.authtoken.models import Token
 
 
 class CompanyViewSet(viewsets.ModelViewSet):
@@ -72,36 +73,37 @@ def delete_one_account(request, account_id):
         return Response(data=data)
 
 # Working code
-@api_view(["POST"])
-def post_one_account(request):
-
-    account  = Account.objects.get(account_id=1)
-
-    new_account = Account()
-
-    if request.method == "POST":
-        ser = AccountSerializer(new_account, data=request.data)
-
-        if ser.is_valid():
-            ser.save()
-            return Response(ser.data, status=status.HTTP_201_CREATED)
-        return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
 # @api_view(["POST"])
 # def post_one_account(request):
 #
-#     if request.method == 'POST':
-#         ser = AccountSerializer(data=request.data)
-#         data = {}
+#     account  = Account.objects.get(account_id=1)
+#
+#     new_account = Account()
+#
+#     if request.method == "POST":
+#         ser = AccountSerializer(new_account, data=request.data)
+#
 #         if ser.is_valid():
-#             account = ser.save()
-#             data['reponse'] = 'success'
-#             data['full_name'] = account.full_name
-#         else:
-#             data = ser.errors
-#         return Response(data)
+#             ser.save()
+#             return Response(ser.data, status=status.HTTP_201_CREATED)
+#         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(["POST"])
+def post_one_account(request):
+
+    if request.method == 'POST':
+        ser = AccountSerializer(data=request.data)
+        data = {}
+        if ser.is_valid():
+            account = ser.save()
+            data['reponse'] = 'success'
+            data['full_name'] = account.full_name
+            data['token'] = Token.objects.get(user=account).key
+        else:
+            data = ser.errors
+        return Response(data)
 
 # ---------------- EXPORT PRODUCTS --------------
 

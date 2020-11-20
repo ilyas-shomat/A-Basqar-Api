@@ -9,7 +9,7 @@ from rest_framework.authtoken.models import Token
 
 
 class MyAccountManager(BaseUserManager):
-    def create_user(self, username, full_name, password, status):
+    def create_user(self, username, password=None):
         if not username:
             raise ValueError("User must have username")
 
@@ -22,13 +22,11 @@ class MyAccountManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, full_name, password, status):
+    def create_superuser(self, username, password):
         user = self.create_user(
             # email=self.normalize_email(email),
             password=password,
             username=username,
-            full_name=full_name,
-            status=status,
         )
         user.is_admin = True
         user.is_staff = True
@@ -60,7 +58,7 @@ class Account(AbstractBaseUser):
     account_id = models.AutoField(primary_key=True)
     full_name = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
-    password = models.CharField(max_length=255)
+    # password = models.CharField(max_length=255)
     status = models.CharField(max_length=255)
 
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='store', null=True)
@@ -72,7 +70,7 @@ class Account(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['full_name', 'password', 'status']
+    REQUIRED_FIELDS = []
 
     objects = MyAccountManager()
 
