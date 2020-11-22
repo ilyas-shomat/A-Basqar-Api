@@ -11,6 +11,7 @@ from .serializers import (
     StoreSerializer
 )
 
+
 # Create your views here.
 
 # --------------- STORES -------------------------------------------------------------
@@ -21,10 +22,11 @@ from .serializers import (
 @permission_classes((IsAuthenticated,))
 def get_all_users_company_stores(request):
     user = request.user
-    stores = Store.objects.filter(store_id=user.store_id)
+    company = Company.objects.get(company_id=user.company_id)
+
+    stores = Store.objects.filter(company=company.company_id)
     ser = StoreSerializer(stores, many=True)
     return Response(ser.data)
-
 
 # @api_view(["GET"])
 # @permission_classes((IsAuthenticated,))
