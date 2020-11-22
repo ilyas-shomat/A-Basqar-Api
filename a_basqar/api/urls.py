@@ -6,7 +6,7 @@ urlpatterns = [
     path('store/<int:company_id>', views.get_stores),
 
 
-    path('accounts/delete/<int:account_id>', views.delete_one_account, name="account_delete"),
+    # path('accounts/delete/<int:account_id>', views.delete_one_account, name="account_delete"),
 
     ############ Common #############
     path('companies/', views.get_post_companies, name="get_all_companies"),

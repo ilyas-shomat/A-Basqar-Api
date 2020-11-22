@@ -13,7 +13,6 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.generics import UpdateAPIView
 
 
-
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
@@ -56,13 +55,15 @@ def post_one_account(request):
 
 # ----------------PROFILE-----------------------
 
+# ----------------Get Profile Info-----------------------
+
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def get_profile_info(request):
     user = request.user  # Gives me a user which made request
     # print("------------"+str(user.password))
     account = Account.objects.get(account_id=user.account_id)
-    ser = AccountSerializer(account)
+    ser = AccountPropertiesSerializer(account)
     return Response(ser.data)
 
 
@@ -72,6 +73,8 @@ def get_profile_info(request):
 #     ser = AccountSerializer(account)
 #     return Response(ser.data)
 
+
+# ----------------Edit Profile Data-----------------------
 
 @api_view(["PUT"])
 @permission_classes((IsAuthenticated,))
@@ -93,21 +96,50 @@ def put_one_account(request):
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["DELETE"])
-def delete_one_account(request, account_id):
-    try:
-        account = Account.objects.get(account_id=account_id)
-    except Account.DoesNotExixt:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+# ----------------Change Password-----------------------
 
-    if request.method == "DELETE":
-        operation = account.delete()
-        data = {}
-        if operation:
-            data["status"] = "delete success"
-        else:
-            data["status"] = "delete failed"
-        return Response(data=data)
+class ChangePasswordView(UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    model = Account
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # Check old password
+            if not self.object.check_password(serializer.data.get("old_password")):
+                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+
+            # set_password also hashes the password that the user will get
+            self.object.set_password(serializer.data.get("new_password"))
+            self.object.save()
+            return Response({"response": "successfully changed password"}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# @api_view(["DELETE"])
+# def delete_one_account(request, account_id):
+#     try:
+#         account = Account.objects.get(account_id=account_id)
+#     except Account.DoesNotExixt:
+#         return Response(status=status.HTTP_404_NOT_FOUND)
+#
+#     if request.method == "DELETE":
+#         operation = account.delete()
+#         data = {}
+#         if operation:
+#             data["status"] = "delete success"
+#         else:
+#             data["status"] = "delete failed"
+#         return Response(data=data)
 
 
 # Working code
@@ -145,36 +177,3 @@ def get_stores(request, company_id):
     ser = StoreSerializer(stores, many=True)
     str = request.data.get("store")
     return Response(ser.data)
-
-
-class ChangePasswordView(UpdateAPIView):
-    serializer_class = ChangePasswordSerializer
-    model = Account
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (TokenAuthentication,)
-
-    def get_object(self, queryset=None):
-        obj = self.request.user
-        return obj
-
-    def update(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        serializer = self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-            # Check old password
-            if not self.object.check_password(serializer.data.get("old_password")):
-                return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
-
-            # confirm the new passwords match
-            new_password = serializer.data.get("new_password")
-            confirm_new_password = serializer.data.get("confirm_new_password")
-            if new_password != confirm_new_password:
-                return Response({"new_password": ["New passwords must match"]}, status=status.HTTP_400_BAD_REQUEST)
-
-            # set_password also hashes the password that the user will get
-            self.object.set_password(serializer.data.get("new_password"))
-            self.object.save()
-            return Response({"response": "successfully changed password"}, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

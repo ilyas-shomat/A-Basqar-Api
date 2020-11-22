@@ -61,6 +61,9 @@ class AccountSerializer(serializers.ModelSerializer):
 
 
 class AccountPropertiesSerializer(serializers.ModelSerializer):
+    store = StoreSerializer(read_only=True)
+    company = CompanySerializer(read_only=True)
+
     class Meta:
         model = models.Account
         fields = "__all__"
@@ -76,4 +79,4 @@ class AccountPropertiesSerializer(serializers.ModelSerializer):
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
-    confirm_new_password = serializers.CharField(required=True)
+    # confirm_new_password = serializers.CharField(required=True)
