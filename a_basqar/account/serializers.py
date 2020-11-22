@@ -1,40 +1,7 @@
 from rest_framework import serializers
 from . import models
+from company_management.serializers import CompanySerializer, StoreSerializer
 
-
-class CompanySerializer(serializers.ModelSerializer):
-    # stores = StoreSerializer()
-
-    class Meta:
-        model = models.Company
-        # fields = ('company_id', 'company_name', 'company_bin')
-        fields = "__all__"
-
-
-class StoreSerializer(serializers.ModelSerializer):
-    # company = CompanySerializer(read_only=True)
-
-    class Meta:
-        model = models.Store
-        fields = "__all__"
-
-
-# Working code
-# class AccountSerializer(serializers.ModelSerializer):
-#     # store = StoreSerializer()
-#     # company = CompanySerializer(read_only=True)
-#
-#
-#     class Meta:
-#         model = models.Account
-#         fields = "__all__"
-#         extra_kwargs = {
-#             'password': {'write_only':True},
-#             'is_admin': {'write_only': True},
-#             'is_active': {'write_only': True},
-#             'is_staff': {'write_only': True},
-#             'is_superuser': {'write_only': True},
-#         }
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -62,7 +29,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
 class AccountPropertiesSerializer(serializers.ModelSerializer):
     store = StoreSerializer(read_only=True)
-    company = CompanySerializer(read_only=True)
+    # company = CompanySerializer(read_only=True)
 
     class Meta:
         model = models.Account

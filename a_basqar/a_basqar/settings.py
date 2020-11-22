@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,8 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'api',
     'rest_framework.authtoken',
+
+    # apps ----------
+    'account',
+    'company_management',
 ]
 
 REST_FRAMEWORK = {
@@ -79,7 +83,7 @@ TEMPLATES = [
     },
 ]
 
-AUTH_USER_MODEL = 'api.Account'
+AUTH_USER_MODEL = 'account.Account'
 
 WSGI_APPLICATION = 'a_basqar.wsgi.application'
 
