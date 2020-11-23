@@ -5,4 +5,7 @@ urlpatterns = [
 
     ############ Stores #############
     path('stores/', views.get_all_users_company_stores, name="get_all_users_company_stores"),
+
+    ############ Company #############
+    path('company/create', views.registration_new_company, name="registration_new_company"),
 ]
