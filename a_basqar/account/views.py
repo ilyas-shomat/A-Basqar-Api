@@ -19,7 +19,6 @@ from .serializers import (
 # --------------- COMMON -------------------------------------------------------------
 
 # --------------- Get All Accounts ---------------
-
 @api_view(["GET"])
 # @permission_classes((IsAuthenticated,))
 def get_all_accounts(request):
@@ -31,7 +30,6 @@ def get_all_accounts(request):
 # --------------- AUTH -------------------------------------------------------------
 
 # --------------- Registration New User ---------------
-
 @api_view(["POST"])
 def post_one_account(request):
     if request.method == 'POST':
@@ -50,7 +48,6 @@ def post_one_account(request):
 # --------------- PROFILE -------------------------------------------------------------
 
 # --------------- Get Profile Info ---------------
-
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
 def get_profile_info(request):
@@ -61,7 +58,6 @@ def get_profile_info(request):
 
 
 # --------------- Edit Profile Data ---------------
-
 @api_view(["PUT"])
 @permission_classes((IsAuthenticated,))
 def put_one_account(request):
@@ -83,7 +79,6 @@ def put_one_account(request):
 
 
 # --------------- Change Password ---------------
-
 class ChangePasswordView(UpdateAPIView):
     serializer_class = ChangePasswordSerializer
     model = Account
