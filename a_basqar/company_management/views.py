@@ -20,7 +20,6 @@ from .serializers import (
 
 @api_view(["POST"])
 def registration_new_company(request):
-
     new_company = Company()
 
     if request.method == "POST":
@@ -45,6 +44,24 @@ def get_all_users_company_stores(request):
     stores = Store.objects.filter(company=company.company_id)
     ser = StoreSerializer(stores, many=True)
     return Response(ser.data)
+
+
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def create_new_store(request):
+    user = request.user
+    company = Company.objects.get(company_id=user.company_id)
+
+    new_store = Store()
+    new_store.company = company
+
+    if request.method == "POST":
+        ser = StoreSerializer(new_store, data=request.data)
+
+        if ser.is_valid():
+            ser.save()
+            return Response(ser.data, status=status.HTTP_201_CREATED)
+        return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # @api_view(["GET"])
 # @permission_classes((IsAuthenticated,))

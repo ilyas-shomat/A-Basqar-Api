@@ -72,7 +72,7 @@ def put_one_account(request):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == "PUT":
-        print("--------account" + str(account))
+        # print("--------account" + str(account))
         ser = AccountPropertiesSerializer(account, data=request.data, partial=True)
         data = {}
         if ser.is_valid():
