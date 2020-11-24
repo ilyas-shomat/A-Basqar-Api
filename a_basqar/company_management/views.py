@@ -3,6 +3,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+from account.models import Account
+from account.serializers import AccountPropertiesSerializer
+
 from .models import (
     Company,
     Store
@@ -41,6 +44,23 @@ def get_all_users_company_stores(request):
     stores = Store.objects.filter(company=company.company_id)
     ser = StoreSerializer(stores, many=True)
     return Response(ser.data)
+
+
+# --------------- Get Users List Of One Store ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_user_of_one_store(request, store_id):
+    # print("///"+str(store_id))
+    try:
+        account = Account.objects.filter(store=store_id)
+    except Account.DoesNotExixt:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        ser = AccountPropertiesSerializer(account, many=True)
+
+    return Response(ser.data)
+
 
 # --------------- Create New Store  ---------------
 @api_view(["POST"])

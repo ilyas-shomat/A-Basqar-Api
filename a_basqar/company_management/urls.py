@@ -5,6 +5,7 @@ urlpatterns = [
 
     ############ Stores #############
     path('stores/', views.get_all_users_company_stores, name="get_all_users_company_stores"),
+    path('stores/users_list/<int:store_id>', views.get_user_of_one_store, name="get_all_users_company_stores"),
     path('stores/create', views.create_new_store, name="create_new_store"),
     path('stores/update/<int:store_id>', views.update_store_info, name="update_store_info"),
     path('stores/delete/<int:store_id>', views.delete_one_account, name="delete_one_account"),
