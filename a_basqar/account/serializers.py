@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from . import models
 from company_management.serializers import CompanySerializer, StoreSerializer
+from company_management.models import AccessFunc
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -20,7 +21,9 @@ class AccountSerializer(serializers.ModelSerializer):
                                  username=self.validated_data["username"],
                                  status=self.validated_data["status"],
                                  store=self.validated_data["store"],
-                                 company=self.validated_data["company"])
+                                 company=self.validated_data["company"],
+                                 )
+        # AccessFunc.objects.create(user=account)
         password = self.validated_data['password']
         account.set_password(password)
         account.save()

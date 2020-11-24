@@ -8,11 +8,13 @@ from account.serializers import AccountPropertiesSerializer
 
 from .models import (
     Company,
-    Store
+    Store,
+    AccessFunc
 )
 from .serializers import (
     CompanySerializer,
-    StoreSerializer
+    StoreSerializer,
+    AccessFuncsSerializer
 )
 
 
@@ -44,6 +46,48 @@ def get_companies_all_user(request):
         ser = AccountPropertiesSerializer(accounts, many=True)
 
     return Response(ser.data)
+
+# --------------- Get User From Companies Users List ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_user_from_companies_users_list(request, account_id):
+
+    if request.method == "GET":
+        accounts = Account.objects.get(account_id=account_id)
+        ser = AccountPropertiesSerializer(accounts)
+
+    return Response(ser.data)
+
+# --------------- Get User's Access Funcs ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_users_access_funcs(request, account_id):
+
+    if request.method == "GET":
+        accounts = Account.objects.get(account_id=account_id)
+        access_funcs = AccessFunc.objects.get(user=accounts)
+        ser = AccessFuncsSerializer(access_funcs)
+
+    return Response(ser.data)
+
+# --------------- Edit User's Access Funcs ---------------
+@api_view(["PUT"])
+@permission_classes((IsAuthenticated,))
+def edit_users_access_funcs(request, account_id):
+    try:
+        account = Account.objects.get(account_id=account_id)
+    except Account.DoesNotExixt:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "PUT":
+        accesses = AccessFunc.objects.get(user=account)
+        ser = AccessFuncsSerializer(accesses, data=request.data)
+        data = {}
+        if ser.is_valid():
+            ser.save()
+            data["status"] = "update success"
+            return Response(data=data)
+        return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # --------------- STORES -------------------------------------------------------------
 
