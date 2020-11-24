@@ -32,6 +32,19 @@ def registration_new_company(request):
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# --------------- Get Companies All Users ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_companies_all_user(request):
+    user = request.user
+
+    if request.method == "GET":
+        company_id = user.company_id
+        accounts = Account.objects.filter(company=company_id)
+        ser = AccountPropertiesSerializer(accounts, many=True)
+
+    return Response(ser.data)
+
 # --------------- STORES -------------------------------------------------------------
 
 # --------------- Get All User's Company Stores ---------------
