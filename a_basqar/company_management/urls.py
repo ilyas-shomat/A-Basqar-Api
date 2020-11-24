@@ -13,5 +13,8 @@ urlpatterns = [
     ############ Company #############
     path('company/create', views.registration_new_company, name="registration_new_company"),
     path('company/users', views.get_companies_all_user, name="get_companies_all_user"),
+    path('company/users/<int:account_id>', views.get_user_from_companies_users_list, name="get_user_from_companies_users_list"),
+    path('company/users/accesses/<int:account_id>', views.get_users_access_funcs, name="get_users_access_funcs"),
+    path('company/users/accesses/edit/<int:account_id>', views.edit_users_access_funcs, name="edit_users_access_funcs"),
 
 ]

@@ -5,8 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
-from company_management.models import Company, Store
-
+from company_management.models import Company, Store, AccessFunc
 
 
 class MyAccountManager(BaseUserManager):
@@ -43,6 +42,7 @@ class Account(AbstractBaseUser):
     username = models.CharField(max_length=255, unique=True)
     # password = models.CharField(max_length=255)
     status = models.CharField(max_length=255)
+    active_account = models.BooleanField(default=False, null=True)
 
     store = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='store', null=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='user_company', null=True)
@@ -71,3 +71,5 @@ class Account(AbstractBaseUser):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+        AccessFunc.objects.create(user=instance)
+

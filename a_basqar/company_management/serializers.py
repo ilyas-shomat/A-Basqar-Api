@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Company, Store
+from .models import Company, Store, AccessFunc
 
 class CompanySerializer(serializers.ModelSerializer):
     # stores = StoreSerializer()
@@ -16,4 +16,10 @@ class StoreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Store
+        fields = "__all__"
+
+class AccessFuncsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AccessFunc
         fields = "__all__"
