@@ -35,7 +35,9 @@ class AccountPropertiesSerializer(serializers.ModelSerializer):
         model = models.Account
         fields = "__all__"
         extra_kwargs = {
-            # 'password': {'write_only':True},
+            'company': {'write_only': True},
+            'last_login': {'write_only': True},
+            'password': {'write_only':True},
             'is_admin': {'write_only': True},
             'is_active': {'write_only': True},
             'is_staff': {'write_only': True},
