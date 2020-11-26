@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from .models import Company, Store, AccessFunc
 
 class CompanySerializer(serializers.ModelSerializer):
