@@ -47,8 +47,8 @@ class Each_Company_Product(models.Model):
                                                 related_name='each_company_product_category',
                                                 null=True)
     each_company_product_barcode = models.CharField(max_length=255)
-    each_company_product_import_price = models.IntegerField()
-    each_company_product_export_price = models.IntegerField()
+    each_company_product_import_price = models.IntegerField(default=0)
+    each_company_product_export_price = models.IntegerField(default=0)
     each_company_product_in_company = models.ForeignKey(Company,
                                                      on_delete=models.CASCADE,
                                                      related_name='each_company_product_company',
@@ -65,4 +65,4 @@ class Each_Store_Product(models.Model):
     each_store_product_amount = models.IntegerField()
 
     def __str__(self):
-        return self.each_store_product_in_company_product
+        return self.each_store_product_in_company_product.__str__()
