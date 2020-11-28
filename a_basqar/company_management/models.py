@@ -1,5 +1,8 @@
 from django.db import models
 # from account.models import Account
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 class Company(models.Model):
     company_id = models.AutoField(primary_key=True)
@@ -12,7 +15,7 @@ class Company(models.Model):
 
 class Store(models.Model):
     store_id = models.AutoField(primary_key=True)
-    store_name = models.CharField(max_length=255)
+    store_name = models.CharField(max_length=255, default="Default")
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='store_company', null=True)
 
     def __str__(self):
@@ -30,3 +33,10 @@ class AccessFunc(models.Model):
     management = models.BooleanField(default=True)
     reports = models.BooleanField(default=True)
     profile = models.BooleanField(default=True)
+
+
+@receiver(post_save, sender=Company)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Store.objects.create(company=instance)
+

@@ -30,8 +30,14 @@ def registration_new_company(request):
         ser = CompanySerializer(new_company, data=request.data)
 
         if ser.is_valid():
-            ser.save()
-            return Response(ser.data, status=status.HTTP_201_CREATED)
+            data = {}
+            if ser.is_valid():
+                ser.save()
+                store = Store.objects.get(company=new_company)
+                data["status"] = "success"
+                data["company_id"] = new_company.company_id
+                data["default_store_id"] = store.store_id
+                return Response(data=data, status=status.HTTP_201_CREATED)
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -1,42 +1,42 @@
 from rest_framework import serializers
 
 from .models import (
-    Common_Category,
-    Each_Company_Category,
-    Common_Product,
-    Each_Company_Product,
-    Each_Store_Product
+    CommonCategory,
+    CompanyCategory,
+    CommonProduct,
+    CompanyProduct,
+    StoreProduct
 )
 
 
 class CommonCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Common_Category
+        model = CommonCategory
         fields = "__all__"
 
 
 class EachCompanyCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Each_Company_Category
+        model = CompanyCategory
         fields = "__all__"
 
 
 class CommonProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Common_Product
+        model = CommonProduct
         fields = "__all__"
 
 
 class EachCompanyProductSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Each_Company_Product
+        model = CompanyProduct
         fields = "__all__"
 
 
 class EachStoreProductProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Each_Store_Product
+        model = StoreProduct
         fields = "__all__"
