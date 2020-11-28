@@ -4,11 +4,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from .models import (
-    Common_Category,
-    Each_Company_Category,
-    Common_Product,
-    Each_Company_Product,
-    Each_Store_Product
+    CommonCategory,
+    CompanyCategory,
+    CommonProduct,
+    CompanyProduct,
+    StoreProduct
 )
 
 from .serializer import (
@@ -31,7 +31,7 @@ from company_management.serializers import CompanySerializer, StoreSerializer
 # --------------- Get All Common Categories ---------------
 @api_view(["GET"])
 def get_all_common_categories(request):
-    common_categories = Common_Category.objects
+    common_categories = CommonCategory.objects
 
     if request.method == "GET":
         ser = CommonCategorySerializer(common_categories, many=True)
@@ -57,8 +57,8 @@ def get_each_company_categories(request):
     if request.method == "GET":
         account = Account.objects.get(account_id=user.account_id)
         company = Company.objects.get(company_id=account.company.company_id)
-        each_company_category = Each_Company_Category.objects.filter(each_company_category_company=company)
-        ser = EachCompanyCategorySerializer(each_company_category, many=True)
+        company_category = CompanyCategory.objects.filter(category_company=company)
+        ser = EachCompanyCategorySerializer(company_category, many=True)
 
     return Response(ser.data)
 
@@ -70,7 +70,7 @@ def get_each_company_products_in_selected_category(request, category_id):
     user = request.user
 
     if request.method == "GET":
-        company_category = Each_Company_Category.objects.get(each_company_category_id=category_id)
-        products_in_selected_category = Each_Company_Product.objects.filter(each_company_product_category=company_category)
+        company_category = CompanyCategory.objects.get(category_id=category_id)
+        products_in_selected_category = CompanyProduct.objects.filter(product_category=company_category)
         ser = EachCompanyProductSerializer(products_in_selected_category, many=True)
     return Response(ser.data)
