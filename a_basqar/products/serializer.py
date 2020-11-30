@@ -23,6 +23,12 @@ class EachCompanyCategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class CreateCompanyCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyCategory
+        fields = ()
+
+
 class CommonProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommonProduct
