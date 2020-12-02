@@ -42,6 +42,12 @@ class EachCompanyProductSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class CreateCompanyProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyProduct
+        fields = ()
+
+
 class EachStoreProductProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = StoreProduct

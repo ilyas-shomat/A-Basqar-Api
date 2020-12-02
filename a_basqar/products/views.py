@@ -18,6 +18,7 @@ from .serializer import (
     EachCompanyProductSerializer,
     EachStoreProductProductSerializer,
     CreateCompanyCategorySerializer,
+    CreateCompanyProductSerializer,
 )
 
 from account.models import Account
@@ -72,7 +73,7 @@ def get_each_company_products_in_selected_category(request, category_id):
     return Response(ser.data)
 
 
-# --------------- Get Each Company Categories ---------------
+# --------------- Add Category From Common To Company ---------------
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def add_company_category_from_common_category(request, common_category_id):
@@ -88,6 +89,7 @@ def add_company_category_from_common_category(request, common_category_id):
         new_company_category = CompanyCategory()
         new_company_category.category_name = common_category.category_name
         new_company_category.category_level = common_category.category_level
+        new_company_category.category_index_id = common_category.category_index_id
 
         new_company_category.category_company = company
 
@@ -100,7 +102,47 @@ def add_company_category_from_common_category(request, common_category_id):
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# --------------- Add Products From Common To Company ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def add_products_from_common_to_company(request, common_product_id):
+    user = request.user
 
+    if request.method == "POST":
+        try:
+            common_product = CommonProduct.objects.get(product_id=common_product_id)
+            # print("///////////////////////////////////// " + str(common_product))
+        except CommonProduct.DoesNotExixt:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
+        company = Company.objects.get(company_id=user.company_id)
+        # print("///////////////////////////////////// " + str(company))
+        common_category = CommonCategory.objects.get(category_index_id=common_product.product_category.category_index_id)
+        try:
+            company_category = CompanyCategory.objects.get(category_index_id=common_category.category_index_id)
+            # print("///////////////////////////////////// " + str(common_product))
+        except CompanyCategory.DoesNotExixt:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
+        print("/// common cat:"+str(common_category))
+        print("/// company cat:"+str(company_category))
+
+        new_company_product = CompanyProduct()
+        new_company_product.product_name = common_product.product_name
+        common_product_category = company_category
+        # print("///////////////////////////////////// " + str(common_product_category))
+        # company_product_category
+        new_company_product.product_category = common_product_category
+        # print("///////////////////////////////////// new_company_product.product_category " + str(common_product_category))
+
+        new_company_product.product_barcode = ""
+        new_company_product.product_export_price = 0
+        new_company_product.product_import_price = 0
+        new_company_product.product_company = company
+
+        ser = CreateCompanyProductSerializer(new_company_product, data=request.data)
+        if ser.is_valid():
+            ser.save()
+            data = {"status": "success"}
+            return Response(data=data, status=status.HTTP_201_CREATED)
 
