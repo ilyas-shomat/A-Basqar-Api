@@ -19,6 +19,7 @@ from .serializer import (
     EachStoreProductProductSerializer,
     CreateCompanyCategorySerializer,
     CreateCompanyProductSerializer,
+    EditCompanyProductExportAndImportSerializer,
 )
 
 from account.models import Account
@@ -111,29 +112,21 @@ def add_products_from_common_to_company(request, common_product_id):
     if request.method == "POST":
         try:
             common_product = CommonProduct.objects.get(product_id=common_product_id)
-            # print("///////////////////////////////////// " + str(common_product))
         except CommonProduct.DoesNotExixt:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         company = Company.objects.get(company_id=user.company_id)
-        # print("///////////////////////////////////// " + str(company))
         common_category = CommonCategory.objects.get(category_index_id=common_product.product_category.category_index_id)
+
         try:
             company_category = CompanyCategory.objects.get(category_index_id=common_category.category_index_id)
-            # print("///////////////////////////////////// " + str(common_product))
         except CompanyCategory.DoesNotExixt:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        print("/// common cat:"+str(common_category))
-        print("/// company cat:"+str(company_category))
 
         new_company_product = CompanyProduct()
         new_company_product.product_name = common_product.product_name
         common_product_category = company_category
-        # print("///////////////////////////////////// " + str(common_product_category))
-        # company_product_category
         new_company_product.product_category = common_product_category
-        # print("///////////////////////////////////// new_company_product.product_category " + str(common_product_category))
 
         new_company_product.product_barcode = ""
         new_company_product.product_export_price = 0
@@ -145,4 +138,24 @@ def add_products_from_common_to_company(request, common_product_id):
             ser.save()
             data = {"status": "success"}
             return Response(data=data, status=status.HTTP_201_CREATED)
+
+# --------------- Edit Products Import/Export Prices ---------------
+@api_view(["PUT"])
+@permission_classes((IsAuthenticated,))
+def edit_prods_import_export_prices(request, product_id):
+    user = request.user
+
+    try:
+        company_product = CompanyProduct.objects.get(product_id=product_id)
+    except CompanyProduct.DoesNotExixt:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "PUT":
+        ser = EditCompanyProductExportAndImportSerializer(company_product, data=request.data,  partial= True)
+        data = {}
+        if ser.is_valid():
+            ser.save()
+            data["status"] = "success"
+            return Response(data=data)
+        return  Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -52,6 +52,7 @@ class CommonProduct(models.Model):
 
 
 class CompanyProduct(models.Model):
+    DoesNotExixt = None
     product_id = models.AutoField(primary_key=True)
     product_name = models.CharField(max_length=255)
     product_category = models.ForeignKey(CompanyCategory,
