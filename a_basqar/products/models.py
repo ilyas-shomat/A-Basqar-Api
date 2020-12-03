@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from company_management.models import (
     Company,
@@ -12,6 +14,11 @@ class CommonCategory(models.Model):
     category_name = models.CharField(max_length=255)
     category_level = models.IntegerField()
 
+    category_index_id = models.UUIDField(default=uuid.uuid4,
+                                         editable=False,
+                                         unique=True,
+                                         null=True)
+
     def __str__(self):
         return self.category_name + " " + str(self.category_level)
 
@@ -24,6 +31,8 @@ class CompanyCategory(models.Model):
                                          on_delete=models.CASCADE,
                                          related_name='category_company',
                                          null=True)
+
+    category_index_id = models.CharField(max_length=255)
 
     def __str__(self):
         return self.category_name + " " + str(self.category_level)
@@ -43,6 +52,7 @@ class CommonProduct(models.Model):
 
 
 class CompanyProduct(models.Model):
+    DoesNotExixt = None
     product_id = models.AutoField(primary_key=True)
     product_name = models.CharField(max_length=255)
     product_category = models.ForeignKey(CompanyCategory,
