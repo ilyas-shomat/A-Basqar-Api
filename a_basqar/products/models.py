@@ -6,6 +6,7 @@ from company_management.models import (
     Store,
 )
 
+
 # Create your models here.
 
 
@@ -32,7 +33,7 @@ class CompanyCategory(models.Model):
                                          related_name='category_company',
                                          null=True)
 
-    category_index_id = models.CharField(max_length=255)
+    category_index_id = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return self.category_name + " " + str(self.category_level)
@@ -66,6 +67,7 @@ class CompanyProduct(models.Model):
                                         on_delete=models.CASCADE,
                                         related_name='each_company_product_company',
                                         null=True)
+
     def __str__(self):
         return self.product_name
 

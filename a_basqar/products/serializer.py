@@ -10,14 +10,12 @@ from .models import (
 
 
 class CommonCategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = CommonCategory
         fields = "__all__"
 
 
 class EachCompanyCategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = CompanyCategory
         fields = "__all__"
@@ -36,7 +34,6 @@ class CommonProductSerializer(serializers.ModelSerializer):
 
 
 class EachCompanyProductSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = CompanyProduct
         fields = "__all__"
@@ -52,6 +49,7 @@ class EditCompanyProductExportAndImportSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyProduct
         fields = ('product_import_price', 'product_export_price')
+
 
 class EachStoreProductProductSerializer(serializers.ModelSerializer):
     class Meta:
