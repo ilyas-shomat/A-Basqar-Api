@@ -1,7 +1,7 @@
 from django.db import models
 
 from products.models import (
-    CompanyProduct
+    StoreProduct
 )
 
 from account.models import (
@@ -21,7 +21,7 @@ class ImShoppingCartObject(models.Model):
 
 class ImportProducts(models.Model):
     im_prod_id = models.AutoField(primary_key=True)
-    import_product = models.ForeignKey(CompanyProduct,
+    import_product = models.ForeignKey(StoreProduct,
                                        on_delete=models.CASCADE,
                                        related_name='import_product',
                                        null=True)

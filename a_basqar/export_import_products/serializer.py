@@ -5,6 +5,9 @@ from .models import (
     ImportProducts
 )
 
+from products.serializer import (
+    EachStoreProductProductSerializer
+)
 
 class ImShoppingCartObjSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,6 +16,8 @@ class ImShoppingCartObjSerializer(serializers.ModelSerializer):
 
 
 class ImportProductsSerializer(serializers.ModelSerializer):
+    import_product = EachStoreProductProductSerializer(read_only=True)
+
     class Meta:
         model = ImportProducts
-        fields = "__all__"
+        fields = ('im_prod_id', 'import_product')

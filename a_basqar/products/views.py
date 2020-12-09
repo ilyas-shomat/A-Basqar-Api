@@ -20,6 +20,7 @@ from .serializer import (
     CreateCompanyCategorySerializer,
     CreateCompanyProductSerializer,
     EditCompanyProductExportAndImportSerializer,
+    CreateStoreProductsSerializer,
 )
 
 from account.models import Account

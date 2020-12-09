@@ -8,6 +8,8 @@ from company_management.models import (
 
 
 # Create your models here.
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class CommonCategory(models.Model):
@@ -78,7 +80,20 @@ class StoreProduct(models.Model):
                                         on_delete=models.CASCADE,
                                         related_name='company_product',
                                         null=True)
-    product_amount = models.IntegerField()
+    product_amount = models.IntegerField(default=0, null=True)
 
     def __str__(self):
         return self.company_product.__str__()
+
+@receiver(post_save, sender=CompanyProduct)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        company = instance.product_company
+        stores = Store.objects.filter(company=company)
+        # store_identifiers = []
+        for item in stores:
+            StoreProduct.objects.create(company_product=instance)
+
+
+        #     store_identifiers.append(item.store_id)
+        # Store.objects.create(company=instance)
