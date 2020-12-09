@@ -81,6 +81,10 @@ class StoreProduct(models.Model):
                                         related_name='company_product',
                                         null=True)
     product_amount = models.IntegerField(default=0, null=True)
+    store = models.ForeignKey(Store,
+                                 on_delete=models.CASCADE,
+                                 related_name='company_product',
+                                 null=True)
 
     def __str__(self):
         return self.company_product.__str__()
@@ -92,8 +96,4 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         stores = Store.objects.filter(company=company)
         # store_identifiers = []
         for item in stores:
-            StoreProduct.objects.create(company_product=instance)
-
-
-        #     store_identifiers.append(item.store_id)
-        # Store.objects.create(company=instance)
+            StoreProduct.objects.create(company_product=instance, store=item)
