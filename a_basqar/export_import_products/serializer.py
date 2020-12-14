@@ -17,6 +17,7 @@ from products.models import (
     StoreProduct
 )
 
+
 class ImShoppingCartObjSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImShoppingCartObject
@@ -36,9 +37,11 @@ class CreateNewImportCartObjectSerializer(serializers.ModelSerializer):
         model = ImShoppingCartObject
         fields = ()
 
+
 class AddProdToImShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImportProduct
+        fields = ('import_product', 'im_shopping_car_obj')
 
 #
 # class AddProdToImShoppingCartSerializer(serializers.ModelSerializer):
@@ -64,25 +67,24 @@ class AddProdToImShoppingCartSerializer(serializers.ModelSerializer):
 #             new_import_prod.import_product = store_product
 #             new_import_prod.save()
 
-            # new_current_object.account =
+# new_current_object.account =
 
 
-
-        # current_cart_object = ImShoppingCartObject.objects.get(status="current")
-        # if current_cart_object is None:
-        #     new_current_object = ImShoppingCartObject()
-        #     new_current_object.status = "current"
-        #     new_current_object.account = user
-        #
-        #     new_import_objc_ser = ImportShoppingCartEmptySerializer(new_current_object, data=request.data)
-        #
-        #     if new_import_objc_ser.is_valid():
-        #         new_import_objc_ser.save()
-        #         store_product = StoreProduct.objects.get(product_id=store_product_id)
-        #
-        #         new_cart_product = ImportProduct()
-        #         new_cart_product.im_shopping_car_obj = new_current_object
-        #         new_cart_product.import_product = store_product
+# current_cart_object = ImShoppingCartObject.objects.get(status="current")
+# if current_cart_object is None:
+#     new_current_object = ImShoppingCartObject()
+#     new_current_object.status = "current"
+#     new_current_object.account = user
+#
+#     new_import_objc_ser = ImportShoppingCartEmptySerializer(new_current_object, data=request.data)
+#
+#     if new_import_objc_ser.is_valid():
+#         new_import_objc_ser.save()
+#         store_product = StoreProduct.objects.get(product_id=store_product_id)
+#
+#         new_cart_product = ImportProduct()
+#         new_cart_product.im_shopping_car_obj = new_current_object
+#         new_cart_product.import_product = store_product
 
 
 # class ImportShoppingCartEmptySerializer(serializers.ModelSerializer):
@@ -96,4 +98,3 @@ class AddProdToImShoppingCartSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = ImShoppingCartObject
 #         fields = ()
-

@@ -87,7 +87,7 @@ class StoreProduct(models.Model):
                                  null=True)
 
     def __str__(self):
-        return self.company_product.__str__()
+        return self.company_product.__str__() + "id: " + str(self.product_id)
 
 @receiver(post_save, sender=CompanyProduct)
 def create_auth_token(sender, instance=None, created=False, **kwargs):

@@ -18,6 +18,9 @@ class ImShoppingCartObject(models.Model):
 
     status = models.CharField(max_length=255)
 
+    def __str__(self):
+        return "import cart object with id: " + str(self.im_shopping_cart_id) + ", status: " + self.status
+
 
 class ImportProduct(models.Model):
     im_prod_id = models.AutoField(primary_key=True)

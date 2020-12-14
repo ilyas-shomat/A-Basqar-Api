@@ -99,8 +99,7 @@ def add_company_category_from_common_category(request, common_category_id):
         ser = CreateCompanyCategorySerializer(new_company_category, data=request.data)
         if ser.is_valid():
             ser.save()
-            data = {}
-            data["status"] = "success"
+            data = {"status": "success"}
             return Response(data=data, status=status.HTTP_201_CREATED)
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -116,8 +116,21 @@ def create_new_import_cart_object(request):
 @permission_classes((IsAuthenticated,))
 def add_product_to_import_cart(request):
     user = request.user
-
+    product = StoreProduct.objects.get(product_id=request.data["import_product"])
+    import_cart_object = ImShoppingCartObject(im_shopping_cart_id=request.data["im_shopping_car_obj"])
+    # print("///" + str(request.data["import_product"]))
     if request.method == "POST":
-        ser = AddProdToImShoppingCartSerializer(data=request.data)
+        data = {}
+
+        import_prod = ImportProduct()
+        import_prod.import_product = product
+        import_prod.im_shopping_car_obj = import_cart_object
+
+        ser = AddProdToImShoppingCartSerializer(import_prod, data=request.data)
+
         if ser.is_valid():
             ser.save()
+            data["import_product"] = "added"
+
+        return Response(data=data)
+
