@@ -19,7 +19,7 @@ class ImShoppingCartObject(models.Model):
     status = models.CharField(max_length=255)
 
 
-class ImportProducts(models.Model):
+class ImportProduct(models.Model):
     im_prod_id = models.AutoField(primary_key=True)
     import_product = models.ForeignKey(StoreProduct,
                                        on_delete=models.CASCADE,

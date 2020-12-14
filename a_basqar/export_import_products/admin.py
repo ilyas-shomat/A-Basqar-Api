@@ -2,9 +2,9 @@ from django.contrib import admin
 
 from .models import (
     ImShoppingCartObject,
-    ImportProducts
+    ImportProduct
 )
 
 admin.site.register(ImShoppingCartObject)
-admin.site.register(ImportProducts)
+admin.site.register(ImportProduct)
 
