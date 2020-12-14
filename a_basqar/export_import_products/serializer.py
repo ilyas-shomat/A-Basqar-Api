@@ -33,6 +33,7 @@ class ImportProductsSerializer(serializers.ModelSerializer):
 
 class CreateNewImportCartObjectSerializer(serializers.ModelSerializer):
     class Meta:
+        model = ImShoppingCartObject
         fields = ()
 
 class AddProdToImShoppingCartSerializer(serializers.ModelSerializer):

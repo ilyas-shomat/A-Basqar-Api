@@ -75,7 +75,6 @@ def get_current_import_object(request):
 
     if request.method == "GET":
         data = {}
-
         try:
             import_object = ImShoppingCartObject.objects.get(account=user, status="current")
             if import_object is not None:
@@ -83,18 +82,34 @@ def get_current_import_object(request):
         except ObjectDoesNotExist:
             data["import_object"] = "none"
 
-
-
         return Response(data=data)
 
 
+# --------------- Create New Import Cart Object ---------------
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def create_new_import_cart_object(request):
     user = request.user
 
-    # if request.method == "POST":
-    # ser = CreateNewImportCartObjectSerializer(data=request.data)
+    if request.method == "POST":
+        data = {}
+        ser = CreateNewImportCartObjectSerializer(data=request.data)
+        if ser.is_valid():
+            try:
+                import_object = ImShoppingCartObject.objects.get(account=user, status="current")
+                if import_object is not None:
+                    data["import_object"] = "exist"
+                    data["desc"] = "object already exist"
+            except ObjectDoesNotExist:
+                new_import_obj = ImShoppingCartObject()
+                new_import_obj.account = user
+                new_import_obj.status = "current"
+                new_import_obj.save()
+
+                data["import_object"] = "created"
+                data["desc"] = "created new current import object"
+
+        return Response(data=data)
 
 
 @api_view(["POST"])
