@@ -130,13 +130,12 @@ def add_product_to_import_cart(request):
 @api_view(["PUT"])
 @permission_classes((IsAuthenticated,))
 def edit_product_count_in_import_cart(request):
-    user = request.user
     import_product = ImportProduct.objects.get(im_prod_id=request.data["im_prod_id"])
 
     if request.method == "PUT":
         data = {}
         import_product.prod_amount_in_cart = request.data["prod_amount_in_cart"]
-        ser = EditProductCountInImportCartSerializer(import_product, data=request.data, partial=True)
+        ser = EditProductCountInImportCartSerializer(import_product, data=request.data)
 
         if ser.is_valid():
             print("/// entire the ser")
@@ -146,4 +145,24 @@ def edit_product_count_in_import_cart(request):
             data["desc"] = "import_product's amount count edited"
 
         return Response(data=data)
+
+
+# --------------- Delete Product Count in Import Cart ---------------
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
+def delete_product_count_in_import_cart(request):
+    import_product = ImportProduct.objects.get(im_prod_id=request.data["im_prod_id"])
+
+    if request.method == "DELETE":
+        data = {}
+        operation = import_product.delete()
+
+        if operation:
+            data["message"] = "deleted"
+            data["desc"] = "selected import_product deleted"
+        else:
+            data["message"] = "failed"
+            data["desc"] = "failed deleting selected import_product"
+        return Response(data=data)
+
 
