@@ -36,36 +36,9 @@ def get_current_import_shopping_cart(request):
         import_products = ImportProduct.objects.filter(im_shopping_car_obj=im_shopping_cart_obj)
         shopping_cart_ser = ImShoppingCartObjSerializer(im_shopping_cart_obj)
         im_prods_ser = ImportProductsSerializer(import_products, many=True)
-        data = {}
-        data["shopping_cart_obj"] = shopping_cart_ser.data
-        data["import_products"] = im_prods_ser.data
+        data = {"shopping_cart_obj": shopping_cart_ser.data, "import_products": im_prods_ser.data}
 
     return Response(data)
-
-
-# --------------- Add Product To Import Cart ---------------
-# @api_view(["POST"])
-# @permission_classes((IsAuthenticated,))
-# def addProductToImportCart(request, store_product_id):
-#     user = request.user
-#
-#     if request.method == "POST":
-#         current_cart_object = ImShoppingCartObject.objects.get(status="current")
-#         if current_cart_object is None:
-#             new_current_object = ImShoppingCartObject()
-#             new_current_object.status = "current"
-#             new_current_object.account = user
-#
-#             new_import_objc_ser = ImportShoppingCartEmptySerializer(new_current_object, data=request.data)
-#
-#             if new_import_objc_ser.is_valid():
-#                 new_import_objc_ser.save()
-#                 store_product = StoreProduct.objects.get(product_id=store_product_id)
-#
-#                 new_cart_product = ImportProduct()
-#                 new_cart_product.im_shopping_car_obj = new_current_object
-#                 new_cart_product.import_product = store_product
-
 
 # --------------- Get Current Import Object ---------------
 @api_view(["GET"])
@@ -112,15 +85,31 @@ def create_new_import_cart_object(request):
         return Response(data=data)
 
 
+# --------------- Add Product to Import Cart ---------------
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def add_product_to_import_cart(request):
     user = request.user
     product = StoreProduct.objects.get(product_id=request.data["import_product"])
     import_cart_object = ImShoppingCartObject(im_shopping_cart_id=request.data["im_shopping_car_obj"])
-    # print("///" + str(request.data["import_product"]))
     if request.method == "POST":
         data = {}
+
+        import_prods = ImportProduct.objects.filter(im_shopping_car_obj=import_cart_object)
+        for prod in import_prods:
+            if prod.import_product.product_id == request.data["import_product"]:
+
+                #################### This code be useful in future
+                # amount_in_cart = 2 * prod.prod_amount_in_cart
+                # prod.prod_amount_in_cart = prod.prod_amount_in_cart + request.data["prod_amount_in_cart"]
+                # prod_ser = AddProdToImShoppingCartSerializer(prod, data=request.data)
+                #
+                # if prod_ser.is_valid():
+                #     prod_ser.save()
+
+                data["message"] = "exist"
+                data["desc"] = "this import_product is already exist in import cart"
+                return Response(data=data)
 
         import_prod = ImportProduct()
         import_prod.import_product = product
@@ -130,7 +119,7 @@ def add_product_to_import_cart(request):
 
         if ser.is_valid():
             ser.save()
-            data["import_product"] = "added"
+            data["message"] = "added"
+            data["desc"] = "import_product added to the cart"
 
         return Response(data=data)
-

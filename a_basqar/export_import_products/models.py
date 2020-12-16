@@ -33,6 +33,7 @@ class ImportProduct(models.Model):
                                             on_delete=models.CASCADE,
                                             related_name='im_shopping_car_obj',
                                             null=True)
+    prod_amount_in_cart = models.IntegerField(null=True)
 
     def __str__(self):
-        return self.import_product.__str__()
+        return self.import_product.__str__() + " count: " +str(self.prod_amount_in_cart)
