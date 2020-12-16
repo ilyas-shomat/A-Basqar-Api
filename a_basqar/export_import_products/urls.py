@@ -11,4 +11,6 @@ urlpatterns = [
          name="create_new_import_cart_object"),
     path('add_prods_to_im_shop', views.add_product_to_import_cart,
          name="addProductToImportCart"),
+    path('edit_product_count_in_import_cart', views.edit_product_count_in_import_cart,
+         name="edit_product_count_in_import_cart")
 ]

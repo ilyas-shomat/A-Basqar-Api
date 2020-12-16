@@ -14,7 +14,8 @@ from .serializer import (
     # ImportShoppingCartEmptySerializer,
     # AddProductToImportCart,
     AddProdToImShoppingCartSerializer,
-    CreateNewImportCartObjectSerializer
+    CreateNewImportCartObjectSerializer,
+    EditProductCountInImportCartSerializer
 )
 from products.models import (
     StoreProduct
@@ -39,6 +40,7 @@ def get_current_import_shopping_cart(request):
         data = {"shopping_cart_obj": shopping_cart_ser.data, "import_products": im_prods_ser.data}
 
     return Response(data)
+
 
 # --------------- Get Current Import Object ---------------
 @api_view(["GET"])
@@ -98,7 +100,6 @@ def add_product_to_import_cart(request):
         import_prods = ImportProduct.objects.filter(im_shopping_car_obj=import_cart_object)
         for prod in import_prods:
             if prod.import_product.product_id == request.data["import_product"]:
-
                 #################### This code be useful in future
                 # amount_in_cart = 2 * prod.prod_amount_in_cart
                 # prod.prod_amount_in_cart = prod.prod_amount_in_cart + request.data["prod_amount_in_cart"]
@@ -123,3 +124,26 @@ def add_product_to_import_cart(request):
             data["desc"] = "import_product added to the cart"
 
         return Response(data=data)
+
+
+# --------------- Edit Product Count in Import Cart ---------------
+@api_view(["PUT"])
+@permission_classes((IsAuthenticated,))
+def edit_product_count_in_import_cart(request):
+    user = request.user
+    import_product = ImportProduct.objects.get(im_prod_id=request.data["im_prod_id"])
+
+    if request.method == "PUT":
+        data = {}
+        import_product.prod_amount_in_cart = request.data["prod_amount_in_cart"]
+        ser = EditProductCountInImportCartSerializer(import_product, data=request.data, partial=True)
+
+        if ser.is_valid():
+            print("/// entire the ser")
+
+            ser.save()
+            data["message"] = "edited"
+            data["desc"] = "import_product's amount count edited"
+
+        return Response(data=data)
+

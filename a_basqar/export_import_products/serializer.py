@@ -42,3 +42,9 @@ class AddProdToImShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImportProduct
         fields = ('import_product', 'im_shopping_car_obj', 'prod_amount_in_cart')
+
+
+class EditProductCountInImportCartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImportProduct
+        fields = ('im_prod_id', 'prod_amount_in_cart')
