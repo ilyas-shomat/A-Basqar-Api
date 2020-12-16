@@ -6,7 +6,10 @@ from company_management.models import (
     Store,
 )
 
+
 # Create your models here.
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class CommonCategory(models.Model):
@@ -32,7 +35,7 @@ class CompanyCategory(models.Model):
                                          related_name='category_company',
                                          null=True)
 
-    category_index_id = models.CharField(max_length=255)
+    category_index_id = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return self.category_name + " " + str(self.category_level)
@@ -66,6 +69,7 @@ class CompanyProduct(models.Model):
                                         on_delete=models.CASCADE,
                                         related_name='each_company_product_company',
                                         null=True)
+
     def __str__(self):
         return self.product_name
 
@@ -76,7 +80,20 @@ class StoreProduct(models.Model):
                                         on_delete=models.CASCADE,
                                         related_name='company_product',
                                         null=True)
-    product_amount = models.IntegerField()
+    product_amount = models.IntegerField(default=0, null=True)
+    store = models.ForeignKey(Store,
+                                 on_delete=models.CASCADE,
+                                 related_name='company_product',
+                                 null=True)
 
     def __str__(self):
-        return self.company_product.__str__()
+        return self.company_product.__str__() + "id: " + str(self.product_id)
+
+@receiver(post_save, sender=CompanyProduct)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        company = instance.product_company
+        stores = Store.objects.filter(company=company)
+        # store_identifiers = []
+        for item in stores:
+            StoreProduct.objects.create(company_product=instance, store=item)
