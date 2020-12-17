@@ -2,7 +2,9 @@ from rest_framework import serializers
 
 from .models import (
     ImShoppingCartObject,
-    ImportProduct
+    ImportProduct,
+    ExShoppingCartObject,
+    ExportProduct
 )
 
 from products.serializer import (
@@ -42,3 +44,41 @@ class AddProdToImShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImportProduct
         fields = ('import_product', 'im_shopping_car_obj', 'prod_amount_in_cart')
+
+
+class EditProductCountInImportCartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImportProduct
+        fields = ('im_prod_id', 'prod_amount_in_cart')
+
+
+class ExShoppingCartObjSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExShoppingCartObject
+        fields = "__all__"
+
+
+class ExportProductsSerializer(serializers.ModelSerializer):
+    export_product = EachStoreProductProductSerializer(read_only=True)
+
+    class Meta:
+        model = ExportProduct
+        fields = "__all__"
+
+
+class CreateNewExportCartObjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExShoppingCartObject
+        fields = ()
+
+
+class AddProdToExShoppingCartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExportProduct
+        fields = ('export_product', 'ex_shopping_car_obj', 'prod_amount_in_cart')
+
+
+class EditProductCountInExportCartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExportProduct
+        fields = ('ex_prod_id', 'prod_amount_in_cart')
