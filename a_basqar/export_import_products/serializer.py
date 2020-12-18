@@ -64,6 +64,7 @@ class MakeImportSerializer(serializers.ModelSerializer):
 
 
 class ExShoppingCartObjSerializer(serializers.ModelSerializer):
+    export_contragent = ContragentSerializer(read_only=True)
     class Meta:
         model = ExShoppingCartObject
         fields = "__all__"
@@ -86,10 +87,19 @@ class CreateNewExportCartObjectSerializer(serializers.ModelSerializer):
 class AddProdToExShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExportProduct
-        fields = ('export_product', 'ex_shopping_car_obj', 'prod_amount_in_cart')
+        # fields = ('export_product', 'ex_shopping_car_obj', 'prod_amount_in_cart')
+        fields = ('export_product', 'prod_amount_in_cart')
 
 
 class EditProductCountInExportCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExportProduct
         fields = ('ex_prod_id', 'prod_amount_in_cart')
+
+
+
+class MakeExportSerializer(serializers.ModelSerializer):
+    export_contragent = ContragentSerializer(read_only=True)
+    class Meta:
+        model = ImShoppingCartObject
+        fields = ('cash_sum', 'export_contragent')

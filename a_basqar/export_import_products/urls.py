@@ -36,4 +36,10 @@ urlpatterns = [
          name="edit_product_count_in_export_cart"),
     path('delete_product_count_in_export_cart', views.delete_product_count_in_export_cart,
          name="delete_product_count_in_export_cart"),
+    path('get_export_history', views.get_export_history,
+         name="get_export_history"),
+    path('get_export_history_item/<int:export_id>', views.get_export_history_item,
+         name="get_export_history_item"),
+    path('sell_new_products', views.make_export_history,
+         name="make_export_history"),
 ]

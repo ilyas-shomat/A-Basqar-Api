@@ -21,7 +21,7 @@ class ImShoppingCartObject(models.Model):
     status = models.CharField(max_length=255)
     import_contragent = models.ForeignKey(Contragent,
                                    on_delete=models.CASCADE,
-                                   related_name='import_product',
+                                   related_name='import_contragent',
                                    null=True)
     date = models.DateField(null=True)
     cash_sum = models.CharField(max_length=255, null=True)
@@ -51,10 +51,17 @@ class ExShoppingCartObject(models.Model):
     ex_shopping_cart_id = models.AutoField(primary_key=True)
     account = models.ForeignKey(Account,
                                 on_delete=models.CASCADE,
-                                related_name='export_account',
+                                related_name='export_contragent',
                                 null=True)
 
     status = models.CharField(max_length=255)
+
+    export_contragent = models.ForeignKey(Contragent,
+                                   on_delete=models.CASCADE,
+                                   related_name='export_product',
+                                   null=True)
+    date = models.DateField(null=True)
+    cash_sum = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return "export cart object with id: " + str(self.ex_shopping_cart_id) + ", status: " + self.status
