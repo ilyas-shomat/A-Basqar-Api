@@ -35,6 +35,14 @@ class AccessFunc(models.Model):
     profile = models.BooleanField(default=True)
 
 
+class Contragent(models.Model):
+    contragent_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255)
+    bin = models.CharField(max_length=255, null=True)
+    phone_number = models.CharField(max_length=255, null=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="company_contragent", null=True)
+
+
 @receiver(post_save, sender=Company)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:

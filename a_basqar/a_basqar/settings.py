@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'company_management',
     'products',
     'export_import_products',
+    'kassa',
 ]
 
 REST_FRAMEWORK = {
