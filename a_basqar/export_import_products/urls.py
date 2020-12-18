@@ -15,6 +15,13 @@ urlpatterns = [
          name="edit_product_count_in_import_cart"),
     path('delete_product_count_in_import_cart', views.delete_product_count_in_import_cart,
          name="delete_product_count_in_import_cart"),
+    path('get_import_history', views.get_import_history,
+         name="get_import_history"),
+    path('get_import_history_item/<int:import_id>', views.get_import_history_item,
+         name="get_import_history_item"),
+    path('buy_new_products', views.make_import_history,
+         name="make_import_history"),
+
 
     ############ IMPORT SHOPPING CART #############
     path('export_shopping_cart', views.get_current_export_shopping_cart,
