@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from datetime import datetime
 
 from .models import (
     ImportProduct,
@@ -19,10 +20,14 @@ from .serializer import (
     ExShoppingCartObjSerializer,
     AddProdToExShoppingCartSerializer,
     CreateNewExportCartObjectSerializer,
-    EditProductCountInExportCartSerializer
+    EditProductCountInExportCartSerializer,
+    MakeImportSerializer
 )
 from products.models import (
     StoreProduct
+)
+from company_management.models import (
+    Contragent
 )
 
 
@@ -37,11 +42,16 @@ def get_current_import_shopping_cart(request):
     user = request.user
 
     if request.method == "GET":
-        im_shopping_cart_obj = ImShoppingCartObject.objects.get(account=user, status="current")
-        import_products = ImportProduct.objects.filter(im_shopping_car_obj=im_shopping_cart_obj)
-        shopping_cart_ser = ImShoppingCartObjSerializer(im_shopping_cart_obj)
-        im_prods_ser = ImportProductsSerializer(import_products, many=True)
-        data = {"shopping_cart_obj": shopping_cart_ser.data, "import_products": im_prods_ser.data}
+        data = {}
+        try:
+            im_shopping_cart_obj = ImShoppingCartObject.objects.get(account=user, status="current")
+            import_products = ImportProduct.objects.filter(im_shopping_car_obj=im_shopping_cart_obj)
+            shopping_cart_ser = ImShoppingCartObjSerializer(im_shopping_cart_obj)
+            im_prods_ser = ImportProductsSerializer(import_products, many=True)
+            data = {"shopping_cart_obj": shopping_cart_ser.data, "import_products": im_prods_ser.data}
+        except ObjectDoesNotExist:
+            data["message"] = "empty"
+            data["desc"] = "import cart is empty"
 
     return Response(data)
 
@@ -97,7 +107,9 @@ def create_new_import_cart_object(request):
 def add_product_to_import_cart(request):
     user = request.user
     product = StoreProduct.objects.get(product_id=request.data["import_product"])
-    import_cart_object = ImShoppingCartObject(im_shopping_cart_id=request.data["im_shopping_car_obj"])
+    # import_cart_object = ImShoppingCartObject(im_shopping_cart_id=request.data["im_shopping_car_obj"])
+    import_cart_object = ImShoppingCartObject(account=user, status="current")
+
     if request.method == "POST":
         data = {}
 
@@ -170,6 +182,55 @@ def delete_product_count_in_import_cart(request):
         return Response(data=data)
 
 
+# --------------- Make Import History (Buy Products) ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def make_import_history(request):
+    user = request.user
+    contragent = Contragent.objects.get(contragent_id=request.data["import_contragent"])
+    if request.method == "POST":
+        data = {}
+        try:
+            current_import = ImShoppingCartObject.objects.get(account=user, status="current")
+            current_import.import_contragent = contragent
+            current_import.status = "history"
+            current_import.date = datetime.date(datetime.now())
+            ser = MakeImportSerializer(current_import, data=request.data)
+
+            if ser.is_valid():
+                ser.save()
+                data["message"] = "success"
+                data["desc"] = "successfully changed import object from current to history"
+
+        except ObjectDoesNotExist:
+            data["message"] = "failure"
+            data["desc"] = "import object with status=current not found"
+
+        return Response(data=data)
+
+
+# --------------- Get Import History ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_import_history(request):
+    user = request.user
+
+    if request.method == "GET":
+        import_history_objects = ImShoppingCartObject.objects.filter(account=user, status="history")
+        ser = ImShoppingCartObjSerializer(import_history_objects, many=True)
+        return Response(ser.data)
+
+# --------------- Get Import History Item ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_import_history_item(request, import_id):
+    user = request.user
+
+    if request.method == "GET":
+        import_history_objects = ImShoppingCartObject.objects.get(im_shopping_cart_id=import_id)
+        ser = ImShoppingCartObjSerializer(import_history_objects)
+        return Response(ser.data)
+
 ######################################################################################
 # --------------- EXPORT SHOPPING CART -------------------------------------------------------------
 ######################################################################################
@@ -240,7 +301,8 @@ def create_new_export_cart_object(request):
 def add_product_to_export_cart(request):
     user = request.user
     product = StoreProduct.objects.get(product_id=request.data["export_product"])
-    export_cart_object = ExShoppingCartObject(ex_shopping_cart_id=request.data["ex_shopping_car_obj"])
+    # export_cart_object = ExShoppingCartObject(ex_shopping_cart_id=request.data["ex_shopping_car_obj"])
+    export_cart_object = ExShoppingCartObject(account=user, status="current")
     if request.method == "POST":
         data = {}
 
@@ -301,3 +363,52 @@ def delete_product_count_in_export_cart(request):
             data["message"] = "failed"
             data["desc"] = "failed deleting selected export_product"
         return Response(data=data)
+
+
+# --------------- Make Export History (Sell Products) ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def make_export_history(request):
+    user = request.user
+    contragent = Contragent.objects.get(contragent_id=request.data["export_contragent"])
+    if request.method == "POST":
+        data = {}
+        try:
+            current_export = ExShoppingCartObject.objects.get(account=user, status="current")
+            current_export.export_contragent = contragent
+            current_export.status = "history"
+            current_export.date = datetime.date(datetime.now())
+            ser = MakeImportSerializer(current_export, data=request.data)
+
+            if ser.is_valid():
+                ser.save()
+                data["message"] = "success"
+                data["desc"] = "successfully changed import object from current to history"
+
+        except ObjectDoesNotExist:
+            data["message"] = "failure"
+            data["desc"] = "import object with status=current not found"
+
+        return Response(data=data)
+
+# --------------- Get Export History ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_export_history(request):
+    user = request.user
+
+    if request.method == "GET":
+        export_history_objects = ExShoppingCartObject.objects.filter(account=user, status="history")
+        ser = ExShoppingCartObjSerializer(export_history_objects, many=True)
+        return Response(ser.data)
+
+# --------------- Get Export History Item ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_export_history_item(request, export_id):
+    user = request.user
+
+    if request.method == "GET":
+        export_history_objects = ExShoppingCartObject.objects.get(ex_shopping_cart_id=export_id)
+        ser = ImShoppingCartObjSerializer(export_history_objects)
+        return Response(ser.data)

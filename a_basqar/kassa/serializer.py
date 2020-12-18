@@ -25,3 +25,8 @@ class GetIncomeKassaHistoryObjectsSerializer(serializers.ModelSerializer):
     class Meta:
         model = IncomeKassaObject
         fields = "__all__"
+
+class CreateNewIncomeKassaObjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IncomeKassaObject
+        fields = ('')

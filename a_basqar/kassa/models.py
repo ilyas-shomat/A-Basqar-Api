@@ -13,7 +13,7 @@ from account.models import (
 
 class IncomeKassaObject(models.Model):
     income_id = models.AutoField(primary_key=True)
-    income_name = models.CharField(max_length=255)
+    income_name = models.CharField(max_length=255, null=True)
     income_status = models.CharField(max_length=255)
     fact_cash = models.CharField(max_length=255, null=True)
     cash_sum = models.CharField(max_length=255, null=True)
