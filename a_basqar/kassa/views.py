@@ -6,7 +6,8 @@ from .models import (
     IncomeKassaObject
 )
 from .serializer import (
-    IncomeKassaObjectSerializer
+    IncomeKassaObjectSerializer,
+    GetIncomeKassaHistoryObjectsSerializer,
 )
 
 ######################################################################################
@@ -22,4 +23,15 @@ def get_income_kassa_objects(request):
     if request.method == "GET":
         income_objects = IncomeKassaObject.objects.filter(account=user)
         ser = IncomeKassaObjectSerializer(income_objects, many=True)
+        return Response(ser.data)
+
+# --------------- Get Income Kassa History Objects ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_income_kassa_history_objects(request):
+    user = request.user
+
+    if request.method == "GET":
+        income_objects = IncomeKassaObject.objects.filter(account=user, income_status="history")
+        ser = GetIncomeKassaHistoryObjectsSerializer(income_objects, many=True)
         return Response(ser.data)
