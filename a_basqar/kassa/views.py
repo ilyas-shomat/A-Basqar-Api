@@ -51,74 +51,8 @@ def get_income_kassa_history_objects(request):
         return Response(ser.data)
 
 
-# --------------- Create New Income Kassa History Objects ---------------
-# @api_view(["POST"])
-# @permission_classes((IsAuthenticated,))
-# def create_new_income_kassa(request):
-    # global cash_sum, contragent, export_object, comment
-    # user = request.user
-    #
-    # if request.data["contragent"] is not None:
-    #     try:
-    #         contragent = Contragent.objects.get(contragent_id=request.data["contragent"])
-    #     except ObjectDoesNotExist:
-    #         contragent = None
-    #
-    # if request.data["export_object"] is not None:
-    #     try:
-    #         export_object = ExShoppingCartObject.objects.get(ex_shopping_cart_id=request.data["export_object"])
-    #         contragent = export_object.export_contragent
-    #         cash_sum = export_object.cash_sum
-    #     except ObjectDoesNotExist:
-    #         export_object = None
-    #
-    # if request.data["comment"] is not None:
-    #     comment = request.data["comment"]
-    # else:
-    #     comment = None
-    #
-    # income_kassa = IncomeKassaObject()
-    # income_kassa.income_name = ""
-    # income_kassa.income_status = "history"
-    # income_kassa.fact_cash = request.data["fact_cash"]
-    # income_kassa.cash_sum = request.data["fact_cash"]
-    # income_kassa.comment = request.data["comment"]
-    # income_kassa.contragent = contragent
-    # income_kassa.export_object = export_object
-    #
-    # # ///////////////
-    # if cash_sum is not None:
-    #     income_kassa.cash_sum = cash_sum
-    # else:
-    #     income_kassa.cash_sum = request.data["fact_cash"]
-    # if comment is not None:
-    #     income_kassa.comment = comment
-    # if contragent is not None:
-    #     income_kassa.contragent = contragent
-    # if export_object is not None:
-    #     income_kassa.export_object = export_object
-    # # //////////////
-    # income_kassa.date = datetime.date(datetime.now())
-    # income_kassa.account = user
-    #
-    # if request.method == "POST":
-    #     data = {}
-    #
-    #     ser = CreateNewIncomeKassaObjectSerializer(income_kassa, data=request.data)
-    #     test_ser = IncomeKassaObjectSerializer(income_kassa)
-    #     if ser.is_valid():
-    #         # ser.save()
-    #         data["message"] = "success"
-    #         data["desc"] = "successfully created new kassa object to history"
-    #         data["data"] = ser.data
-    #         data["test_data"] = test_ser.data
-    #     else:
-    #         data["message"] = "not valid ser"
-    #         data["desc"] = ser.data
-    #     # print("///"+str(ser.errors))
-    #     return Response(data=data)
 
-# --------------- Create New Income Kassa History Objects Wit Export Object ---------------
+# --------------- Create New Income Kassa History Objects Wit Contragent ---------------
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
 def create_new_income_kassa_contr(request):
@@ -150,8 +84,44 @@ def create_new_income_kassa_contr(request):
             return Response(data=data)
 
 
+# --------------- Create New Income Kassa History Objects Wit Export Object ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def create_new_income_kassa_export(request):
+    global cash_sum, contragent
+    user = request.user
 
+    if request.method == "POST":
+        data = {}
+        if request.data["export_object"] is not None:
+            try:
+                export_object = ExShoppingCartObject.objects.get(ex_shopping_cart_id=request.data["export_object"])
+                contragent = export_object.export_contragent
+                cash_sum = export_object.cash_sum
+            except ObjectDoesNotExist:
+                data["message"] = "failure"
+                data["desc"] = "this export object doesn't exist"
 
+            income_kassa_obj = create_new_income_kassa_object(fact_cash=request.data["fact_cash"],
+                                                              cash_sum=cash_sum,
+                                                              contragent=None,
+                                                              export_object=export_object,
+                                                              comment=request.data["comment"],
+                                                              account=user
+                                                              )
+            export_ser = CreateNewIncomeKassaWithExport(income_kassa_obj, data=request.data)
+            test_ser = IncomeKassaObjectSerializer(income_kassa_obj)
+            if export_ser.is_valid():
+                export_ser.save()
+                data["message"] = "success"
+                data["desc"] = "successfully created new kassa object to history"
+                data["data"] = export_ser.data
+                data["test_data"] = test_ser.data
+            else:
+                data["message"] = "not valid ser"
+                data["desc"] = export_ser.data
+            print("///"+str(export_ser.errors))
+            return Response(data=data)
 
 
 
