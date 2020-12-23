@@ -22,5 +22,5 @@ urlpatterns = [
     path('api/management/', include('company_management.urls')),
     path('api/products/', include('products.urls')),
     path('api/ex_im_prods/', include('export_import_products.urls')),
-    path('api/income_kassa/', include('kassa.urls')),
+    path('api/kassa/', include('kassa.urls')),
 ]
