@@ -4,7 +4,7 @@ from company_management.models import (
     Contragent
 )
 from export_import_products.models import (
-    ImShoppingCartObject
+    ExShoppingCartObject
 )
 from account.models import (
     Account
@@ -25,15 +25,15 @@ class IncomeKassaObject(models.Model):
                                    null=True
                                    )
 
-    import_object = models.ForeignKey(ImShoppingCartObject,
+    export_object = models.ForeignKey(ExShoppingCartObject,
                                       on_delete=models.CASCADE,
-                                      related_name='contragent',
+                                      related_name='export_cart_object',
                                       null=True
                                       )
     date = models.DateField()
     account = models.ForeignKey(Account,
                                 on_delete=models.CASCADE,
-                                related_name='contragent',
+                                related_name='income_object_account',
                                 null=True
                                 )
 
