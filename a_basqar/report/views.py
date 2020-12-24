@@ -1,0 +1,68 @@
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from datetime import datetime, timedelta
+
+from kassa.models import (
+    IncomeKassaObject,
+    ExpenseKassaObject
+)
+
+######################################################################################
+# --------------- CASH REPORT  -------------------------------------------------------------
+######################################################################################
+
+# --------------- Get Cash Report ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def get_cash_report(request):
+    user = request.user
+
+    if request.method == "POST":
+        data = {}
+        start_date = request.data["start_date"]
+        end_date = request.data["end_date"]
+        total_balance, total_income, total_expense, total_start_balance = calculateReport(start_date=start_date, end_date=end_date, account=user)
+        data["total_balance"] = total_balance
+        data["total_income"] = total_income
+        data["total_expense"] = total_expense
+        data["total_start_balance"] = total_start_balance
+
+        return Response(data=data)
+
+
+def calculateReport(start_date, end_date, account):
+    total_income = 0
+    total_expense = 0
+    total_balance = 0
+    total_start_balance = 0
+    incomes = IncomeKassaObject.objects.filter(date__range=[start_date, end_date], account=account)
+    expenses = ExpenseKassaObject.objects.filter(date__range=[start_date, end_date], account=account)
+
+    for income in incomes:
+        total_income += int(income.fact_cash)
+    
+    for expense in expenses:
+        total_expense += int(expense.fact_cash)
+
+    total_balance = total_income - total_expense
+
+    last_date_object = datetime.strptime(start_date, '%Y-%m-%d')
+    last_date = (last_date_object - timedelta(days=1)).date()
+    # print("/// date: "+str(last_date))
+    # last_date_new_format = last_date.date()
+
+    start_incomes = IncomeKassaObject.objects.filter(date__range=["2000-01-01", str(last_date)], account=account)
+    start_expences = ExpenseKassaObject.objects.filter(date__range=["2000-01-01", str(last_date)], account=account)
+
+
+    for start_income in start_incomes:
+        total_start_balance += int(start_income.fact_cash)
+    
+    for start_expense in start_expences:
+        total_start_balance -= int(start_expense.fact_cash)
+
+
+    return total_balance, total_income, total_expense, total_start_balance

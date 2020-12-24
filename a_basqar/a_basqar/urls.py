@@ -23,4 +23,6 @@ urlpatterns = [
     path('api/products/', include('products.urls')),
     path('api/ex_im_prods/', include('export_import_products.urls')),
     path('api/kassa/', include('kassa.urls')),
+    path('api/report/', include('report.urls')),
+
 ]
