@@ -12,6 +12,18 @@ from kassa.models import (
 from products.models import (
     CommonProduct,
 )
+from export_import_products.models import (
+    ImportProduct,
+    ExportProduct,
+    StoreProduct,
+)
+from .models import (
+    ReportingProduct
+)
+from .serializer import (
+    ReportingProductSerializer
+)
+from django.forms.models import model_to_dict
 
 ######################################################################################
 # --------------- CASH REPORT  -------------------------------------------------------------
@@ -60,7 +72,6 @@ def calculateReport(start_date, end_date, account):
     start_incomes = IncomeKassaObject.objects.filter(date__range=["2000-01-01", str(last_date)], account=account)
     start_expences = ExpenseKassaObject.objects.filter(date__range=["2000-01-01", str(last_date)], account=account)
 
-
     for start_income in start_incomes:
         total_start_balance += int(start_income.fact_cash)
     
@@ -80,9 +91,38 @@ def calculateReport(start_date, end_date, account):
 @permission_classes((IsAuthenticated,))
 def get_product_report(request):
     user = request.user
+    if request.method == "POST":
+        start_date = request.data["start_date"]
+        end_date = request.data["end_date"]
 
+        product_list = filterProductsReport(start_date, end_date, user)
+        ser = ReportingProductSerializer(product_list, many=True)
 
+        return Response(ser.data)
 
+def filterProductsReport(start_date, end_date, account):
+    prod_list = []
+    import_products = ImportProduct.objects.filter(date__range=[start_date, end_date])
+    export_products = ExportProduct.objects.filter(date__range=[start_date, end_date])
 
-# def filterProductsReport(start_date, end_date, account):
-    # import_products =
+    for import_prod in import_products:
+
+        store_product = import_prod.import_product
+        company_product = store_product.company_product
+
+        reporting_prod = ReportingProduct(prod_id=import_prod.im_prod_id,
+                                          prod_name=company_product.product_name,
+                                          count_on_start="",
+                                          count_on_end="",
+                                          income="",
+                                          expense=""
+        )
+
+        # reporting_prod = ReportingProduct()
+        # reporting_prod.prod_id = import_prod.im_prod_id
+        # store_product = import_prod.import_product
+        # company_product = store_product.company_product
+        # reporting_prod.prod_name = company_product.product_name
+        prod_list.append(reporting_prod)
+
+    return prod_list

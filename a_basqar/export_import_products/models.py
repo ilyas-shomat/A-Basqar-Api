@@ -42,9 +42,11 @@ class ImportProduct(models.Model):
                                             related_name='im_shopping_car_obj',
                                             null=True)
     prod_amount_in_cart = models.IntegerField(null=True)
+    date = models.DateField(null=True)
+
 
     def __str__(self):
-        return self.import_product.__str__() + " count: " +str(self.prod_amount_in_cart)
+        return self.import_product.__str__() + " count: " +str(self.prod_amount_in_cart) + " date: " + str(self.date)
 
 
 class ExShoppingCartObject(models.Model):
@@ -79,6 +81,7 @@ class ExportProduct(models.Model):
                                             related_name='ex_shopping_car_obj',
                                             null=True)
     prod_amount_in_cart = models.IntegerField(null=True)
+    date = models.DateField(null=True)
 
     def __str__(self):
-        return self.export_product.__str__() + " count: " +str(self.prod_amount_in_cart)
+        return self.export_product.__str__() + " count: " +str(self.prod_amount_in_cart) + " date: " + str(self.date)
