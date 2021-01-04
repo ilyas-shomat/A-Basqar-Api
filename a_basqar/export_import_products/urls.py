@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     ############ IMPORT SHOPPING CART #############
-    path('import_shopping_cart', views.get_current_import_shopping_cart,
+    path('import_cart', views.get_current_import_shopping_cart,
          name="get_current_import_shopping_cart"),
     path('get_current_import_object', views.get_current_import_object,
          name="get_current_import_object"),
@@ -24,7 +24,7 @@ urlpatterns = [
 
 
     ############ IMPORT SHOPPING CART #############
-    path('export_shopping_cart', views.get_current_export_shopping_cart,
+    path('export_cart', views.get_current_export_shopping_cart,
          name="get_current_export_shopping_cart"),
     path('get_current_export_object', views.get_current_export_object,
          name="get_current_export_object"),
