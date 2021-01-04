@@ -32,6 +32,10 @@ class ImShoppingCartObject(models.Model):
 
 class ImportProduct(models.Model):
     im_prod_id = models.AutoField(primary_key=True)
+    account = models.ForeignKey(Account,
+                                on_delete=models.CASCADE,
+                                related_name='account_import_prod',
+                                null=True)
     import_product = models.ForeignKey(StoreProduct,
                                        on_delete=models.CASCADE,
                                        related_name='import_product',
@@ -42,9 +46,11 @@ class ImportProduct(models.Model):
                                             related_name='im_shopping_car_obj',
                                             null=True)
     prod_amount_in_cart = models.IntegerField(null=True)
+    date = models.DateField(null=True)
+
 
     def __str__(self):
-        return self.import_product.__str__() + " count: " +str(self.prod_amount_in_cart)
+        return self.import_product.__str__() + " count: " +str(self.prod_amount_in_cart) + " date: " + str(self.date)
 
 
 class ExShoppingCartObject(models.Model):
@@ -69,6 +75,10 @@ class ExShoppingCartObject(models.Model):
 
 class ExportProduct(models.Model):
     ex_prod_id = models.AutoField(primary_key=True)
+    account = models.ForeignKey(Account,
+                                on_delete=models.CASCADE,
+                                related_name='account_export_prod',
+                                null=True)
     export_product = models.ForeignKey(StoreProduct,
                                        on_delete=models.CASCADE,
                                        related_name='export_product',
@@ -79,6 +89,7 @@ class ExportProduct(models.Model):
                                             related_name='ex_shopping_car_obj',
                                             null=True)
     prod_amount_in_cart = models.IntegerField(null=True)
+    date = models.DateField(null=True)
 
     def __str__(self):
-        return self.export_product.__str__() + " count: " +str(self.prod_amount_in_cart)
+        return self.export_product.__str__() + " count: " +str(self.prod_amount_in_cart) + " date: " + str(self.date)
