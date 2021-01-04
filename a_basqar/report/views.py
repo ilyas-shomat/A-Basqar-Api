@@ -9,6 +9,9 @@ from kassa.models import (
     IncomeKassaObject,
     ExpenseKassaObject
 )
+from products.models import (
+    CommonProduct,
+)
 
 ######################################################################################
 # --------------- CASH REPORT  -------------------------------------------------------------
@@ -66,3 +69,20 @@ def calculateReport(start_date, end_date, account):
 
 
     return total_balance, total_income, total_expense, total_start_balance
+
+
+######################################################################################
+# --------------- PRODUCT REPORT  -------------------------------------------------------------
+######################################################################################
+
+# --------------- Get Product Report ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def get_product_report(request):
+    user = request.user
+
+
+
+
+# def filterProductsReport(start_date, end_date, account):
+    # import_products =

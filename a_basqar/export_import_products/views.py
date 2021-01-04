@@ -108,11 +108,12 @@ def add_product_to_import_cart(request):
     user = request.user
     product = StoreProduct.objects.get(product_id=request.data["import_product"])
     # import_cart_object = ImShoppingCartObject(im_shopping_cart_id=request.data["im_shopping_car_obj"])
-    import_cart_object = ImShoppingCartObject(account=user, status="current")
+    import_cart_object = ImShoppingCartObject.objects.get(account=user, status="current")
 
+    print("/// import_cart_object" + str(import_cart_object))
     if request.method == "POST":
         data = {}
-
+        
         import_prods = ImportProduct.objects.filter(im_shopping_car_obj=import_cart_object)
         for prod in import_prods:
             if prod.import_product.product_id == request.data["import_product"]:
@@ -242,11 +243,17 @@ def get_current_export_shopping_cart(request):
     user = request.user
 
     if request.method == "GET":
-        ex_shopping_cart_obj = ExShoppingCartObject.objects.get(account=user, status="current")
-        export_products = ExportProduct.objects.filter(ex_shopping_car_obj=ex_shopping_cart_obj)
-        shopping_cart_ser = ExShoppingCartObjSerializer(ex_shopping_cart_obj)
-        ex_prods_ser = ExportProductsSerializer(export_products, many=True)
-        data = {"shopping_cart_obj": shopping_cart_ser.data, "export_products": ex_prods_ser.data}
+        data = {}
+        try:
+            ex_shopping_cart_obj = ExShoppingCartObject.objects.get(account=user, status="current")
+            export_products = ExportProduct.objects.filter(ex_shopping_car_obj=ex_shopping_cart_obj)
+            shopping_cart_ser = ExShoppingCartObjSerializer(ex_shopping_cart_obj)
+            ex_prods_ser = ExportProductsSerializer(export_products, many=True)
+            data = {"shopping_cart_obj": shopping_cart_ser.data, "export_products": ex_prods_ser.data}
+
+        except ObjectDoesNotExist:
+            data["message"] = "empty"
+            data["desc"] = "export cart is empty"
 
     return Response(data)
 
@@ -302,7 +309,7 @@ def add_product_to_export_cart(request):
     user = request.user
     product = StoreProduct.objects.get(product_id=request.data["export_product"])
     # export_cart_object = ExShoppingCartObject(ex_shopping_cart_id=request.data["ex_shopping_car_obj"])
-    export_cart_object = ExShoppingCartObject(account=user, status="current")
+    export_cart_object = ExShoppingCartObject.objects.get(account=user, status="current")
     if request.method == "POST":
         data = {}
 
@@ -310,12 +317,12 @@ def add_product_to_export_cart(request):
         for prod in export_prods:
             if prod.export_product.product_id == request.data["export_product"]:
                 data["message"] = "exist"
-                data["desc"] = "this export_product is already exist in import cart"
+                data["desc"] = "this export_product is already exist in export cart"
                 return Response(data=data)
 
         export_prod = ExportProduct()
         export_prod.export_product = product
-        export_prod.im_shopping_car_obj = export_cart_object
+        export_prod.ex_shopping_car_obj = export_cart_object
 
         ser = AddProdToExShoppingCartSerializer(export_prod, data=request.data)
 
