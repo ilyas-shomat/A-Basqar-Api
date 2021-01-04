@@ -12,8 +12,8 @@ class ReportingProductSerializer(serializers.Serializer):
     prod_name = serializers.CharField(max_length=200)
     count_on_start = serializers.CharField(max_length=200)
     count_on_end = serializers.CharField(max_length=200)
-    income = serializers.CharField(max_length=200)
-    expense = serializers.CharField(max_length=200)
+    import_count = serializers.CharField(max_length=200)
+    export_count = serializers.CharField(max_length=200)
 
     # def __init__(self, prod_id, prod_name, count_on_start, count_on_end, income, expense):
     #     self.prod_id = prod_id

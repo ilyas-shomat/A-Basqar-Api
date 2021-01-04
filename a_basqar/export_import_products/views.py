@@ -132,6 +132,8 @@ def add_product_to_import_cart(request):
         import_prod = ImportProduct()
         import_prod.import_product = product
         import_prod.im_shopping_car_obj = import_cart_object
+        import_prod.account = user
+        import_prod.date = datetime.date(datetime.now())
 
         ser = AddProdToImShoppingCartSerializer(import_prod, data=request.data)
 
@@ -323,6 +325,8 @@ def add_product_to_export_cart(request):
         export_prod = ExportProduct()
         export_prod.export_product = product
         export_prod.ex_shopping_car_obj = export_cart_object
+        export_prod.account = user
+        export_prod.date = datetime.date(datetime.now())
 
         ser = AddProdToExShoppingCartSerializer(export_prod, data=request.data)
 

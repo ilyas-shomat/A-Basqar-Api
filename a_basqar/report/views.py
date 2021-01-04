@@ -16,6 +16,8 @@ from export_import_products.models import (
     ImportProduct,
     ExportProduct,
     StoreProduct,
+    ImShoppingCartObject,
+    ExShoppingCartObject
 )
 from .models import (
     ReportingProduct
@@ -102,20 +104,23 @@ def get_product_report(request):
 
 def filterProductsReport(start_date, end_date, account):
     prod_list = []
-    import_products = ImportProduct.objects.filter(date__range=[start_date, end_date])
-    export_products = ExportProduct.objects.filter(date__range=[start_date, end_date])
+
+    import_products = ImportProduct.objects.filter(date__range=[start_date, end_date], account=account)
+
+    export_products = ExportProduct.objects.filter(date__range=[start_date, end_date], account=account)
 
     for import_prod in import_products:
 
         store_product = import_prod.import_product
         company_product = store_product.company_product
+        import_count = import_prod.prod_amount_in_cart
 
         reporting_prod = ReportingProduct(prod_id=import_prod.im_prod_id,
                                           prod_name=company_product.product_name,
-                                          count_on_start="",
-                                          count_on_end="",
-                                          income="",
-                                          expense=""
+                                          count_on_start="0",
+                                          count_on_end="0",
+                                          import_count=str(import_count),
+                                          export_count="0"
         )
 
         # reporting_prod = ReportingProduct()

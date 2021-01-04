@@ -32,6 +32,10 @@ class ImShoppingCartObject(models.Model):
 
 class ImportProduct(models.Model):
     im_prod_id = models.AutoField(primary_key=True)
+    account = models.ForeignKey(Account,
+                                on_delete=models.CASCADE,
+                                related_name='account_import_prod',
+                                null=True)
     import_product = models.ForeignKey(StoreProduct,
                                        on_delete=models.CASCADE,
                                        related_name='import_product',
@@ -71,6 +75,10 @@ class ExShoppingCartObject(models.Model):
 
 class ExportProduct(models.Model):
     ex_prod_id = models.AutoField(primary_key=True)
+    account = models.ForeignKey(Account,
+                                on_delete=models.CASCADE,
+                                related_name='account_export_prod',
+                                null=True)
     export_product = models.ForeignKey(StoreProduct,
                                        on_delete=models.CASCADE,
                                        related_name='export_product',
