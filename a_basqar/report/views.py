@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from datetime import datetime, timedelta
+import itertools
 
 from kassa.models import (
     IncomeKassaObject,
@@ -97,8 +98,12 @@ def get_product_report(request):
         start_date = request.data["start_date"]
         end_date = request.data["end_date"]
 
+        # product_list = filterProductsReport(start_date, end_date, user)
+        # ser = ReportingProductSerializer(product_list, many=True)
+
         product_list = filterProductsReport(start_date, end_date, user)
-        ser = ReportingProductSerializer(product_list, many=True)
+        sorted_prod_list = sort_reporting_prods_by_id(product_list)
+        ser = ReportingProductSerializer(sorted_prod_list, many=True)
 
         return Response(ser.data)
 
@@ -106,7 +111,6 @@ def filterProductsReport(start_date, end_date, account):
     prod_list = []
 
     import_products = ImportProduct.objects.filter(date__range=[start_date, end_date], account=account)
-
     export_products = ExportProduct.objects.filter(date__range=[start_date, end_date], account=account)
 
     for import_prod in import_products:
@@ -115,7 +119,7 @@ def filterProductsReport(start_date, end_date, account):
         company_product = store_product.company_product
         import_count = import_prod.prod_amount_in_cart
 
-        reporting_prod = ReportingProduct(prod_id=import_prod.im_prod_id,
+        reporting_prod = ReportingProduct(prod_id=store_product.product_id,
                                           prod_name=company_product.product_name,
                                           count_on_start="0",
                                           count_on_end="0",
@@ -123,11 +127,44 @@ def filterProductsReport(start_date, end_date, account):
                                           export_count="0"
         )
 
-        # reporting_prod = ReportingProduct()
-        # reporting_prod.prod_id = import_prod.im_prod_id
-        # store_product = import_prod.import_product
-        # company_product = store_product.company_product
-        # reporting_prod.prod_name = company_product.product_name
         prod_list.append(reporting_prod)
 
+    for export_prod in export_products:
+        store_product = export_prod.export_product
+        company_product = store_product.company_product
+        export_count = export_prod.prod_amount_in_cart
+        store_product_id = store_product.product_id
+
+        for report_prod in prod_list:
+            if store_product_id == report_prod.prod_id:
+                report_prod.export_count = str(export_count)
+
     return prod_list
+    
+
+
+
+
+def sort_reporting_prods_by_id(list):
+    final_prod_list = []
+    for prod in list:
+        prod_id = prod.prod_id
+
+        if len(final_prod_list) == 0:
+            final_prod_list.append(prod)
+        else:
+            for item in final_prod_list:
+                if item.prod_id == prod_id:
+                    if type == "import":
+                        item.import_count = int(item.import_count) + int(prod.import_count)
+                        item.export_count = int(item.export_count) + int(prod.export_count)
+                    break
+                else:
+                    final_prod_list.append(prod)
+                    break
+        
+    return final_prod_list
+
+        
+
+             
