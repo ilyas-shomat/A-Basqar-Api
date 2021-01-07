@@ -109,12 +109,11 @@ def get_product_report(request):
 
 def filterProductsReport(start_date, end_date, account):
     prod_list = []
-
+    
     import_products = ImportProduct.objects.filter(date__range=[start_date, end_date], account=account)
     export_products = ExportProduct.objects.filter(date__range=[start_date, end_date], account=account)
 
     for import_prod in import_products:
-
         store_product = import_prod.import_product
         company_product = store_product.company_product
         import_count = import_prod.prod_amount_in_cart
@@ -133,36 +132,41 @@ def filterProductsReport(start_date, end_date, account):
         store_product = export_prod.export_product
         company_product = store_product.company_product
         export_count = export_prod.prod_amount_in_cart
-        store_product_id = store_product.product_id
 
-        for report_prod in prod_list:
-            if store_product_id == report_prod.prod_id:
-                report_prod.export_count = str(export_count)
+        reporting_prod = ReportingProduct(prod_id=store_product.product_id,
+                                          prod_name=company_product.product_name,
+                                          count_on_start="0",
+                                          count_on_end="0",
+                                          import_count="0",
+                                          export_count=str(export_count)
+        )
+
+        prod_list.append(reporting_prod)
 
     return prod_list
     
 
-
-
-
 def sort_reporting_prods_by_id(list):
     final_prod_list = []
+
     for prod in list:
         prod_id = prod.prod_id
 
         if len(final_prod_list) == 0:
             final_prod_list.append(prod)
         else:
+            temporary_list = []
+            tag = "not exist"
+
             for item in final_prod_list:
                 if item.prod_id == prod_id:
-                    if type == "import":
-                        item.import_count = int(item.import_count) + int(prod.import_count)
-                        item.export_count = int(item.export_count) + int(prod.export_count)
-                    break
-                else:
-                    final_prod_list.append(prod)
-                    break
-        
+                    tag = "exist"
+                    item.import_count = int(item.import_count) + int(prod.import_count)
+                    item.export_count = int(item.export_count) + int(prod.export_count)
+
+            if tag == "not exist":
+                final_prod_list.append(prod)
+
     return final_prod_list
 
         
