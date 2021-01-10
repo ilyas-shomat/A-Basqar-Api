@@ -271,8 +271,6 @@ def test_list(list_before_start_date, list_after_start_date):
 
 def calculate_start_count_for_prods(list_before_start_date, list_after_start_date):
 
-    # return list_before_start_date
-
     final_sorted_list = []    
     until_list = list_before_start_date
 
@@ -281,11 +279,8 @@ def calculate_start_count_for_prods(list_before_start_date, list_after_start_dat
 
     ########## case when list_before_start_date < list_after_start_date
     if len(list_before_start_date) < len(list_after_start_date):
-        # print("/// first case")
         for prod in list_after_start_date:
             final_sorted_list.append(prod)
-
-        print("/// untile list ids", until_list_ids)
         
         for prod in final_sorted_list:
             for until_prod in list_before_start_date:
@@ -293,49 +288,22 @@ def calculate_start_count_for_prods(list_before_start_date, list_after_start_dat
                     prod.count_on_start = until_prod.count_on_start
                     prod.count_on_end = int(prod.count_on_start) + int(prod.import_count) - int(prod.export_count)
                 
-        
-        # for prod in final_sorted_list:
-        #     for until_prod in list_before_start_date:
-        #         if until_prod.prod_id == prod.prod_id:
-        #             prod.count_on_end = int(prod.count_on_start) + int(prod.count_on_start)
-
-
     ########### case when list_after_start_date > list_after_start_date
+    if len(list_before_start_date) >= len(list_after_start_date):
+        for id in id_list:
+            for prod in list_before_start_date:
+                if prod.prod_id == id:
+                    final_sorted_list.append(prod)
 
+        for prod in final_sorted_list:
+            for after_prod in list_after_start_date:
+                if prod.prod_id == after_prod.prod_id:
+                    prod.count_on_end = after_prod.count_on_end
+                    prod.import_count = after_prod.import_count
+                    prod.export_count = after_prod.export_count
 
-    # for id in id_list:
-    #     for prod in list_before_start_date:
-    #         if prod.prod_id == id:
-    #             final_sorted_list.append(prod)
-    
-    # if len(final_sorted_list) != list_after_start_date:
-    #     starter_list_ids = []
-    #     for item in final_sorted_list:
-    #         starter_list_ids.append(item.prod_id)
-        
-    #     # print("/// end list id's ", str(id_list))
-    #     # print("/// starter list id's ", str(starter_list_ids))
-    #     # print("/// substrac list :", str(Diff(id_list, starter_list_ids)))
-        
-    #     difference_ids = Diff(id_list, starter_list_ids)
-    #     for id in difference_ids:
-    #         for prod in list_after_start_date:
-    #             if prod.prod_id == id:
-    #                 final_sorted_list.append(prod)
-
-    # for prod in final_sorted_list:
-    #     start_count = int(prod.import_count) - int(prod.export_count)
-    #     prod.count_on_start = start_count
-
-    # for sorted_prod in final_sorted_list:
-    #     for after_prod in list_after_start_date:
-    #         if sorted_prod.prod_id == after_prod.prod_id:
-    #             sorted_prod.count_on_end = after_prod.count_on_end
-    #             sorted_prod.import_count = after_prod.import_count
-    #             sorted_prod.export_count = after_prod.export_count
-
-    # for sorted_prod in final_sorted_list:
-    #     sorted_prod.count_on_end =  sorted_prod.count_on_end + sorted_prod.count_on_start
+        for prod in final_sorted_list:
+            prod.count_on_end = int(prod.count_on_start) + int(prod.import_count) - int(prod.export_count)
 
     return final_sorted_list
 
