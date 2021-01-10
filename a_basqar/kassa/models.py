@@ -41,6 +41,9 @@ class IncomeKassaObject(models.Model):
         self.income_name = get_random_string(length=32)
         super(IncomeKassaObject, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return "income kassa object with id: " + str(self.income_id) + ", date: " + str(self.date) + ", cash: " + str(self.fact_cash)
+
 class ExpenseKassaObject(models.Model):
     expense_id = models.AutoField(primary_key=True)
     expense_name = models.CharField(max_length=255, null=True)
@@ -70,3 +73,6 @@ class ExpenseKassaObject(models.Model):
     def save(self, *args, **kwargs):
         self.expense_name = get_random_string(length=32)
         super(ExpenseKassaObject, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return "expense kassa object with id: " + str(self.expense_id) + ", date: " + str(self.date) + ", cash: " + str(self.fact_cash)
