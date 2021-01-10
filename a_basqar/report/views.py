@@ -98,20 +98,49 @@ def get_product_report(request):
         start_date = request.data["start_date"]
         end_date = request.data["end_date"]
 
-        # product_list = filterProductsReport(start_date, end_date, user)
-        # ser = ReportingProductSerializer(product_list, many=True)
+        # product_list = [] 
+        # sorted_prod_list = [] 
+        # calculated_end_count_list = [] 
+        # product_list_on_start = []
+        # sorted_by_id_start_list = []
+        # sorted_by_id_start_list = []
+        # calculated_start_count_list = []
 
+        # list between selected date:
         product_list = filterProductsReport(start_date, end_date, user)
-        product_list_on_start = filterProductForStartCount(start_date=start_date, account=user)
         sorted_prod_list = sort_reporting_prods_by_id(product_list)
         calculated_end_count_list = calculate_reporting_prods_end_count(sorted_prod_list)
-        calculated_start_count_list = calculate_start_count_for_prods(list_before_start_date=product_list_on_start,
+
+
+        # list until selected stert date:
+        product_list_on_start = filterProductForStartCount(start_date=start_date, account=user)
+        sorted_by_id_start_list = sort_reporting_prods_by_id(product_list_on_start)
+        calculate_start_count_for_until_list = calculate_reporting_prods_starting_count(sorted_by_id_start_list)
+
+        # calculate final list
+        calculated_start_count_list = calculate_start_count_for_prods(list_before_start_date=calculate_start_count_for_until_list,
                                                                       list_after_start_date=calculated_end_count_list)
+        
 
+        # testing_list = test_list(list_before_start_date=calculate_start_count_for_until_list,
+                                #  list_after_start_date=calculated_end_count_list)
 
-        ser = ReportingProductSerializer(calculated_start_count_list, many=True)
+        if len(product_list_on_start) != 0:
+            # print("/// works \'if'\ part ") 
+
+            ser = ReportingProductSerializer(calculated_start_count_list, many=True)
+        else:
+            # print("/// works \'else'\ part ") 
+            ser = ReportingProductSerializer(calculated_end_count_list, many=True)
+
+        # print("list objcs: ", len(product_list), " ", len(sorted_prod_list))
+        # ser = ReportingProductSerializer(product_list_on_start, many=True)
+
 
         return Response(ser.data)
+        # product_list = []
+
+
 
 def filterProductsReport(start_date, end_date, account):
     prod_list = []
@@ -182,6 +211,11 @@ def calculate_reporting_prods_end_count(list):
         prod.count_on_end = end_count
     return list
 
+def calculate_reporting_prods_starting_count(list):
+    for prod in list:
+        start_count = int(prod.import_count) - int(prod.export_count)
+        prod.count_on_start = start_count
+    return list
 
 def filterProductForStartCount(start_date, account):
     prod_list = []
@@ -229,30 +263,80 @@ def get_ids_from_list(list):
         ids.append(prod.prod_id)
     return ids
 
+def Diff(li1, li2):
+    return (list(list(set(li1)-set(li2)) + list(set(li2)-set(li1))))
+
+def test_list(list_before_start_date, list_after_start_date):
+    return list_before_start_date
 
 def calculate_start_count_for_prods(list_before_start_date, list_after_start_date):
-    sorted_list = []
+
+    # return list_before_start_date
+
+    final_sorted_list = []    
+    until_list = list_before_start_date
+
     id_list = get_ids_from_list(list_after_start_date)
+    until_list_ids = get_ids_from_list(until_list)
 
-    for id in id_list:
-        for prod in list_before_start_date:
-            if prod.prod_id == id:
-                sorted_list.append(prod)
+    ########## case when list_before_start_date < list_after_start_date
+    if len(list_before_start_date) < len(list_after_start_date):
+        # print("/// first case")
+        for prod in list_after_start_date:
+            final_sorted_list.append(prod)
 
-    for prod in sorted_list:
-        start_count = int(prod.import_count) - int(prod.export_count)
-        prod.count_on_start = start_count
+        print("/// untile list ids", until_list_ids)
+        
+        for prod in final_sorted_list:
+            for until_prod in list_before_start_date:
+                if until_prod.prod_id == prod.prod_id:
+                    prod.count_on_start = until_prod.count_on_start
+                    prod.count_on_end = int(prod.count_on_start) + int(prod.import_count) - int(prod.export_count)
+                
+        
+        # for prod in final_sorted_list:
+        #     for until_prod in list_before_start_date:
+        #         if until_prod.prod_id == prod.prod_id:
+        #             prod.count_on_end = int(prod.count_on_start) + int(prod.count_on_start)
+
+
+    ########### case when list_after_start_date > list_after_start_date
+
+
+    # for id in id_list:
+    #     for prod in list_before_start_date:
+    #         if prod.prod_id == id:
+    #             final_sorted_list.append(prod)
     
+    # if len(final_sorted_list) != list_after_start_date:
+    #     starter_list_ids = []
+    #     for item in final_sorted_list:
+    #         starter_list_ids.append(item.prod_id)
+        
+    #     # print("/// end list id's ", str(id_list))
+    #     # print("/// starter list id's ", str(starter_list_ids))
+    #     # print("/// substrac list :", str(Diff(id_list, starter_list_ids)))
+        
+    #     difference_ids = Diff(id_list, starter_list_ids)
+    #     for id in difference_ids:
+    #         for prod in list_after_start_date:
+    #             if prod.prod_id == id:
+    #                 final_sorted_list.append(prod)
 
-    for sorted_prod in sorted_list:
-        for after_prod in list_after_start_date:
-            if sorted_prod.prod_id == after_prod.prod_id:
-                sorted_prod.count_on_end = after_prod.count_on_end
-                sorted_prod.import_count = after_prod.import_count
-                sorted_prod.export_count = after_prod.export_count
+    # for prod in final_sorted_list:
+    #     start_count = int(prod.import_count) - int(prod.export_count)
+    #     prod.count_on_start = start_count
 
-    for sorted_prod in sorted_list:
-        sorted_prod.count_on_end =  sorted_prod.count_on_end + sorted_prod.count_on_start
-    
-    return sorted_list
+    # for sorted_prod in final_sorted_list:
+    #     for after_prod in list_after_start_date:
+    #         if sorted_prod.prod_id == after_prod.prod_id:
+    #             sorted_prod.count_on_end = after_prod.count_on_end
+    #             sorted_prod.import_count = after_prod.import_count
+    #             sorted_prod.export_count = after_prod.export_count
+
+    # for sorted_prod in final_sorted_list:
+    #     sorted_prod.count_on_end =  sorted_prod.count_on_end + sorted_prod.count_on_start
+
+    return final_sorted_list
+
 
