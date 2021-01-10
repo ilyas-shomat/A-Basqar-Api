@@ -106,7 +106,9 @@ def get_product_report(request):
         sorted_prod_list = sort_reporting_prods_by_id(product_list)
         calculated_end_count_list = calculate_reporting_prods_end_count(sorted_prod_list)
         calculated_start_count_list = calculate_start_count_for_prods(list_before_start_date=product_list_on_start,
-                                                                      list_after_start_date=product_list)
+                                                                      list_after_start_date=calculated_end_count_list)
+
+
         ser = ReportingProductSerializer(calculated_start_count_list, many=True)
 
         return Response(ser.data)
@@ -227,6 +229,7 @@ def get_ids_from_list(list):
         ids.append(prod.prod_id)
     return ids
 
+
 def calculate_start_count_for_prods(list_before_start_date, list_after_start_date):
     sorted_list = []
     id_list = get_ids_from_list(list_after_start_date)
@@ -247,6 +250,9 @@ def calculate_start_count_for_prods(list_before_start_date, list_after_start_dat
                 sorted_prod.count_on_end = after_prod.count_on_end
                 sorted_prod.import_count = after_prod.import_count
                 sorted_prod.export_count = after_prod.export_count
+
+    for sorted_prod in sorted_list:
+        sorted_prod.count_on_end =  sorted_prod.count_on_end + sorted_prod.count_on_start
     
     return sorted_list
 
