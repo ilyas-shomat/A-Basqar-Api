@@ -43,7 +43,7 @@ def get_cash_report(request):
         start_date = request.data["start_date"]
         end_date = request.data["end_date"]
         total_balance, total_income, total_expense, total_start_balance = calculateReport(start_date=start_date, end_date=end_date, account=user)
-        data["total_balance"] = total_balance
+        data["total_balance"] = total_balance + total_start_balance
         data["total_income"] = total_income
         data["total_expense"] = total_expense
         data["total_start_balance"] = total_start_balance
@@ -102,8 +102,12 @@ def get_product_report(request):
         # ser = ReportingProductSerializer(product_list, many=True)
 
         product_list = filterProductsReport(start_date, end_date, user)
+        product_list_on_start = filterProductForStartCount(start_date=start_date, account=user)
         sorted_prod_list = sort_reporting_prods_by_id(product_list)
-        ser = ReportingProductSerializer(sorted_prod_list, many=True)
+        calculated_end_count_list = calculate_reporting_prods_end_count(sorted_prod_list)
+        calculated_start_count_list = calculate_start_count_for_prods(list_before_start_date=product_list_on_start,
+                                                                      list_after_start_date=product_list)
+        ser = ReportingProductSerializer(calculated_start_count_list, many=True)
 
         return Response(ser.data)
 
@@ -170,5 +174,79 @@ def sort_reporting_prods_by_id(list):
     return final_prod_list
 
         
+def calculate_reporting_prods_end_count(list):
+    for prod in list:
+        end_count = int(prod.import_count) - int(prod.export_count)
+        prod.count_on_end = end_count
+    return list
 
-             
+
+def filterProductForStartCount(start_date, account):
+    prod_list = []
+    last_date_object = datetime.strptime(start_date, '%Y-%m-%d')
+    last_date = (last_date_object - timedelta(days=1)).date()
+
+    import_products = ImportProduct.objects.filter(date__range=["2000-01-01", str(last_date)], account=account)
+    export_products = ExportProduct.objects.filter(date__range=["2000-01-01", str(last_date)], account=account)
+
+    for import_prod in import_products:
+        store_product = import_prod.import_product
+        company_product = store_product.company_product
+        import_count = import_prod.prod_amount_in_cart
+
+        reporting_prod = ReportingProduct(prod_id=store_product.product_id,
+                                          prod_name=company_product.product_name,
+                                          count_on_start="0",
+                                          count_on_end="0",
+                                          import_count=str(import_count),
+                                          export_count="0"
+        )
+
+        prod_list.append(reporting_prod)
+
+    for export_prod in export_products:
+        store_product = export_prod.export_product
+        company_product = store_product.company_product
+        export_count = export_prod.prod_amount_in_cart
+
+        reporting_prod = ReportingProduct(prod_id=store_product.product_id,
+                                          prod_name=company_product.product_name,
+                                          count_on_start="0",
+                                          count_on_end="0",
+                                          import_count="0",
+                                          export_count=str(export_count)
+        )
+
+        prod_list.append(reporting_prod)
+
+    return prod_list
+
+def get_ids_from_list(list):
+    ids = []
+    for prod in list:
+        ids.append(prod.prod_id)
+    return ids
+
+def calculate_start_count_for_prods(list_before_start_date, list_after_start_date):
+    sorted_list = []
+    id_list = get_ids_from_list(list_after_start_date)
+
+    for id in id_list:
+        for prod in list_before_start_date:
+            if prod.prod_id == id:
+                sorted_list.append(prod)
+
+    for prod in sorted_list:
+        start_count = int(prod.import_count) - int(prod.export_count)
+        prod.count_on_start = start_count
+    
+
+    for sorted_prod in sorted_list:
+        for after_prod in list_after_start_date:
+            if sorted_prod.prod_id == after_prod.prod_id:
+                sorted_prod.count_on_end = after_prod.count_on_end
+                sorted_prod.import_count = after_prod.import_count
+                sorted_prod.export_count = after_prod.export_count
+    
+    return sorted_list
+
