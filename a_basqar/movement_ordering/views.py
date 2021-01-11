@@ -10,7 +10,8 @@ from .models import (
 )
 
 from .serializer import (
-    MovementObjectSerializer
+    MovementObjectSerializer,
+    CreateNewMovementObjectSerializer
 )
 
 ######################################################################################
@@ -54,3 +55,28 @@ def get_movement_cart(request):
     
     return Response(data)
 
+# --------------- Create New Movement Cart ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def create_new_movement_cart(request):
+    account = request.user
+
+    if request.method == "POST":
+        data = {}
+        ser = CreateNewMovementObjectSerializer(data=request.data)
+        if ser.is_valid():
+            try:
+                movement_object = MovementObject.objects.get(account=account, status="current")
+                if movement_object is not None:
+                    data["movement_object"] = "exist"
+                    data["desc"] = "object already exist"
+            except ObjectDoesNotExist:
+                new_movement_object = MovementObject()
+                new_movement_object.account = account
+                new_movement_object.status = "current"
+                new_movement_object.save()          
+
+                data["movement_object"] = "created"
+                data["desc"] = "created new current movement object"
+        
+        return Response(data=data)

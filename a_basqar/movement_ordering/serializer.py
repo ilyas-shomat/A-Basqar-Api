@@ -19,3 +19,8 @@ class MovementObjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovementObject
         fields = "__all__"
+
+class CreateNewMovementObjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovementObject
+        fields = ()
