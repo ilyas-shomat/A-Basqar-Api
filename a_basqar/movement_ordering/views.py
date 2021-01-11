@@ -11,7 +11,12 @@ from .models import (
 
 from .serializer import (
     MovementObjectSerializer,
-    CreateNewMovementObjectSerializer
+    CreateNewMovementObjectSerializer,
+    AddProdToMovementCartSerializer
+)
+
+from products.models import (
+    StoreProduct
 )
 
 ######################################################################################
@@ -79,4 +84,38 @@ def create_new_movement_cart(request):
                 data["movement_object"] = "created"
                 data["desc"] = "created new current movement object"
         
+        return Response(data=data)
+
+
+# --------------- Add Product to Movement Cart ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def add_product_to_movement_cart(request):
+    account = request.user
+    product = StoreProduct.objects.get(product_id=request.data["movement_product"])
+    movement_object = MovementObject.objects.get(account=account, status="current")
+
+    if request.method == "POST":
+        data = {}
+
+        movement_prods = MovementProduct.objects.filter(movement_object=movement_object)
+        for prod in movement_prods:
+            if prod.movement_product.product_id == request.data["movement_product"]:
+                data["message"] = "exist"
+                data["desc"] = "this import_product is already exist in import cart"
+                return Response(data=data)
+        
+        movement_prod = MovementProduct()
+        movement_prod.movement_product = product
+        movement_prod.movement_object = movement_object
+        movement_prod.account = account
+        movement_prod.date = datetime.date(datetime.now())
+
+        ser = AddProdToMovementCartSerializer(movement_prod, data=request.data)
+
+        if ser.is_valid():
+            ser.save()
+            data["message"] = "added"
+            data["desc"] = "import_product added to the cart"
+
         return Response(data=data)

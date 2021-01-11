@@ -24,3 +24,9 @@ class CreateNewMovementObjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovementObject
         fields = ()
+
+
+class AddProdToMovementCartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovementProduct
+        fields = ('movement_product','product_amount')

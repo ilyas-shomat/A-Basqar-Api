@@ -9,4 +9,6 @@ urlpatterns = [
          name="get_current_movement_object"),
     path('create_movement_object', views.create_new_movement_cart,
          name="create_movement_object"),
+    path('add_prod_to_cart', views.add_product_to_movement_cart,
+         name="add_product_to_movement_cart"),
 ]
