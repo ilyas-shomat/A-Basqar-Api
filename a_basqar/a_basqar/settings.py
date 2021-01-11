@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'export_import_products',
     'kassa',
     'report',
+    'movement_ordering',
 ]
 
 REST_FRAMEWORK = {
