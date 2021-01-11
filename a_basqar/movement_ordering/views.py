@@ -141,3 +141,23 @@ def edit_product_count_in_movement_cart(request):
             data["desc"] = "import_product's amount count edited"
 
         return Response(data=data)
+
+
+# --------------- Delete Product Count in Movement Cart ---------------
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
+def delete_product_count_in_movement_cart(request):
+    movement_product = MovementProduct.objects.get(movement_prod_id=request.data["movement_prod_id"])
+
+    if request.method == "DELETE":
+        data = {}
+
+        operation = movement_product.delete()
+
+        if operation:
+            data["message"] = "deleted"
+            data["desc"] = "selected movement product deleted"
+        else:
+            data["message"] = "failed"
+            data["desc"] = "failed deleting selected movement product"
+        return Response(data=data)

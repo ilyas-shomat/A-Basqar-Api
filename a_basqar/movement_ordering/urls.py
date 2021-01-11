@@ -13,4 +13,6 @@ urlpatterns = [
          name="add_product_to_movement_cart"),
     path('edit_prod_count_in_cart', views.edit_product_count_in_movement_cart,
          name="edit_product_count_in_movement_cart"),
+    path('delete_prod_in_cart', views.delete_product_count_in_movement_cart,
+         name="delete_prod_in_cart"),
 ]
