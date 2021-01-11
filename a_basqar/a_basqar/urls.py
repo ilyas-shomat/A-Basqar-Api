@@ -24,5 +24,5 @@ urlpatterns = [
     path('api/ex_im_prods/', include('export_import_products.urls')),
     path('api/kassa/', include('kassa.urls')),
     path('api/report/', include('report.urls')),
-
+    path('api/move_order/', include('movement_ordering.urls')),
 ]
