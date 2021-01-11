@@ -17,6 +17,25 @@ from .serializer import (
 # --------------- MOVEMENT -------------------------------------------------------------
 ######################################################################################
 
+# --------------- Get Current Movement Object ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_current_movement_object(request):
+    account = request.user
+
+    if request.method == "GET":
+        data = {}
+
+        try:
+            movement_object = MovementObject.objects.get(account=account, status="current")
+            data["import_object"] = "exist"
+
+        except ObjectDoesNotExist:
+            data["import_object"] = "none"
+
+        return Response(data=data)
+
+
 # --------------- Get Movement Cart ---------------
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
@@ -34,3 +53,4 @@ def get_movement_cart(request):
             data["desc"] = "movement cart is empty"
     
     return Response(data)
+
