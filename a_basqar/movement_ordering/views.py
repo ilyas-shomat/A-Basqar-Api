@@ -12,7 +12,8 @@ from .models import (
 from .serializer import (
     MovementObjectSerializer,
     CreateNewMovementObjectSerializer,
-    AddProdToMovementCartSerializer
+    AddProdToMovementCartSerializer,
+    EditProductCountInMovementCartSerializer
 )
 
 from products.models import (
@@ -117,5 +118,26 @@ def add_product_to_movement_cart(request):
             ser.save()
             data["message"] = "added"
             data["desc"] = "import_product added to the cart"
+
+        return Response(data=data)
+
+
+# --------------- Edit Product Count in Movement Cart ---------------
+@api_view(["PUT"])
+@permission_classes((IsAuthenticated,))
+def edit_product_count_in_movement_cart(request):
+    movement_product = MovementProduct.objects.get(movement_prod_id=request.data["movement_prod_id"])
+
+    if request.method == "PUT":
+        data = {}
+        movement_product.product_amount = request.data["product_amount"]
+        ser = EditProductCountInMovementCartSerializer(movement_product, data=request.data)
+        
+        print("/// entire the func")
+
+        if ser.is_valid():
+            ser.save()
+            data["message"] = "edited"
+            data["desc"] = "import_product's amount count edited"
 
         return Response(data=data)

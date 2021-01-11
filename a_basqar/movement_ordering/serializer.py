@@ -30,3 +30,8 @@ class AddProdToMovementCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovementProduct
         fields = ('movement_product','product_amount')
+
+class EditProductCountInMovementCartSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = MovementProduct
+        fields = ('movement_prod_id', 'product_amount')

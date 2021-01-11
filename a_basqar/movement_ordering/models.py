@@ -46,4 +46,4 @@ class MovementProduct(models.Model):
     date = models.DateField(null=True)
 
     def __str__(self):
-        return self.movement_object.__str__() + " count: " + str(self.product_amount) + " date: " + str(self.date)
+        return self.movement_product.__str__() + " count: " + str(self.product_amount) + " date: " + str(self.date) + " id: " + str(self.movement_prod_id)
