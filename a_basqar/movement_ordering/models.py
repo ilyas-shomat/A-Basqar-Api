@@ -81,7 +81,7 @@ class OrderingProduct(models.Model):
                                          null=True)
 
     product_amount = models.IntegerField(null=True)
-    date = models.DateTimeField(null=True)
+    date = models.DateField(null=True)
 
     def __str__(self):
-        return self.ordering_product.__str__() + " count: " + str(self.product_amount) + " date: " + str(self.date) + " id: " + str(self.movement_prod_id)
+        return self.ordering_product.__str__() + " count: " + str(self.product_amount) + " date: " + str(self.date) + " id: " + str(self.ordering_prod_id)

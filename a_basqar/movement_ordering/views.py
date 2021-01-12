@@ -20,7 +20,8 @@ from .serializer import (
     MakeMovementHistorySerializer,
     OrderingObjectSerialzer,
     OrderingProductsSerializer,
-    CreateNewOrderingSerializer
+    CreateNewOrderingSerializer,
+    AddProdToOrderingCartSerializer
 )
 
 from products.models import (
@@ -116,7 +117,7 @@ def add_product_to_movement_cart(request):
         for prod in movement_prods:
             if prod.movement_product.product_id == request.data["movement_product"]:
                 data["message"] = "exist"
-                data["desc"] = "this import_product is already exist in import cart"
+                data["desc"] = "this import_product is already exist in movement cart"
                 return Response(data=data)
         
         movement_prod = MovementProduct()
@@ -297,4 +298,38 @@ def create_new_ordering_cart(request):
                 data["movement_object"] = "created"
                 data["desc"] = "created new current movement object"
         
+        return Response(data=data)
+
+
+# --------------- Add Product to Ordering Cart ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def add_product_to_ordering_cart(request):
+    account = request.user
+    product = StoreProduct.objects.get(product_id=request.data["ordering_product"])
+    ordering_object = OrderingObject.objects.get(account=account, status="current")
+
+    if request.method == "POST":
+        data = {}
+
+        ordering_prods = OrderingProduct.objects.filter(ordering_object=ordering_object)
+        for prod in ordering_prods:
+            if prod.ordering_product.product_id == request.data["ordering_product"]:
+                data["message"] = "exist"
+                data["desc"] = "this ordering product is already exist in ordering cart"
+                return Response(data=data)
+
+        ordering_prod = OrderingProduct()
+        ordering_prod.ordering_product = product
+        ordering_prod.ordering_object = ordering_object
+        ordering_prod.account = account
+        ordering_prod.date = datetime.date(datetime.now())
+
+        ser = AddProdToOrderingCartSerializer(ordering_prod, data=request.data)
+
+        if ser.is_valid():
+            ser.save()
+            data["message"] = "added"
+            data["desc"] = "ordering product added to the cart"
+
         return Response(data=data)

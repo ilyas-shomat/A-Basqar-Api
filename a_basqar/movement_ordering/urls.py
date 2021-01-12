@@ -9,7 +9,7 @@ urlpatterns = [
          name="get_current_movement_object"),
     path('create_movement_object', views.create_new_movement_cart,
          name="create_movement_object"),
-    path('add_prod_to_cart', views.add_product_to_movement_cart,
+    path('add_prod_to_movement_cart', views.add_product_to_movement_cart,
          name="add_product_to_movement_cart"),
     path('edit_prod_count_in_cart', views.edit_product_count_in_movement_cart,
          name="edit_product_count_in_movement_cart"),
@@ -29,5 +29,7 @@ urlpatterns = [
          name="get_ordering_cart"),
    path('create_ordering_object', views.create_new_ordering_cart,
          name="create_new_ordering_cart"),
+   path('add_prod_to_ordering_cart', views.add_product_to_ordering_cart,
+         name="add_product_to_ordering_cart"),
 
 ]
