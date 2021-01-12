@@ -25,5 +25,7 @@ urlpatterns = [
    ############ MOVEMENT #############
    path('ordering_object', views.get_current_ordering_object,
          name="get_current_ordering_object"),
+   path('ordering_cart', views.get_ordering_cart,
+         name="get_ordering_cart"),
 
 ]

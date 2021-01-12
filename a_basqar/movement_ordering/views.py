@@ -13,10 +13,12 @@ from .models import (
 
 from .serializer import (
     MovementObjectSerializer,
+    MovementProductsSerializer,
     CreateNewMovementObjectSerializer,
     AddProdToMovementCartSerializer,
     EditProductCountInMovementCartSerializer,
-    MakeMovementHistorySerializer
+    MakeMovementHistorySerializer,
+    OrderingObjectSerialzer
 )
 
 from products.models import (
@@ -61,7 +63,9 @@ def get_movement_cart(request):
         try:
             movement_object = MovementObject.objects.get(account=account, status="current")
             movement_ser = MovementObjectSerializer(movement_object)
-            data = {"movement_object": movement_ser.data}
+            movement_products = MovementProduct.objects.filter(movement_object=movement_object)
+            movement_product_ser = MovementProductsSerializer(movement_products, many=True)
+            data = {"movement_object": movement_ser.data, "movement_products": movement_product_ser.data}
         except ObjectDoesNotExist:
             data["message"] = "empty"
             data["desc"] = "movement cart is empty"
@@ -251,3 +255,15 @@ def get_current_ordering_object(request):
 @permission_classes((IsAuthenticated,))
 def get_ordering_cart(request):
     account = request.user
+
+    if request.method == "GET":
+        data = {}
+        try:
+            ordering_object = OrderingObject.objects.get(account=account, status="current")
+            movement_ser = OrderingObjectSerialzer(ordering_object)
+            data = {"ordering_object": movement_ser.data}
+        except ObjectDoesNotExist:
+            data["message"] = "empty"
+            data["desc"] = "movement cart is empty"
+
+    return Response(data)
