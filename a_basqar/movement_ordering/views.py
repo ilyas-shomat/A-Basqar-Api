@@ -21,7 +21,8 @@ from .serializer import (
     OrderingObjectSerialzer,
     OrderingProductsSerializer,
     CreateNewOrderingSerializer,
-    AddProdToOrderingCartSerializer
+    AddProdToOrderingCartSerializer,
+    EditProductCountInOrderingCartSerializer
 )
 
 from products.models import (
@@ -331,5 +332,23 @@ def add_product_to_ordering_cart(request):
             ser.save()
             data["message"] = "added"
             data["desc"] = "ordering product added to the cart"
+
+        return Response(data=data)
+
+# --------------- Edit Product Count in Ordering Cart ---------------
+@api_view(["PUT"])
+@permission_classes((IsAuthenticated,))
+def edit_product_count_in_ordering_cart(request):
+    ordering_product = OrderingProduct.objects.get(ordering_prod_id=request.data["ordering_prod_id"])
+
+    if request.method == "PUT":
+        data = {}
+        ordering_product.product_amount = request.data["product_amount"]
+        ser = EditProductCountInOrderingCartSerializer(ordering_product, data=request.data)
+        
+        if ser.is_valid():
+            ser.save()
+            data["message"] = "edited"
+            data["desc"] = "ordering_product's amount count edited"
 
         return Response(data=data)

@@ -83,10 +83,16 @@ class CreateNewOrderingSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderingObject
         fields = ()
-    
 
 
 class AddProdToOrderingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderingProduct
         fields = ('ordering_product','product_amount')
+
+
+class EditProductCountInOrderingCartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderingProduct
+        fields = ('ordering_prod_id', 'product_amount')
+
