@@ -6,7 +6,9 @@ from datetime import datetime
 
 from .models import (
     MovementObject,
-    MovementProduct
+    MovementProduct,
+    OrderingObject, 
+    OrderingProduct
 )
 
 from .serializer import (
@@ -226,3 +228,26 @@ def get_movement_history_item(request, movement_id):
 ######################################################################################
 
 # --------------- Get Current Ordering Object ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_current_ordering_object(request):
+    account = request.user
+
+    if request.method == "GET":
+        data = {}
+
+        try:
+            ordering_object = OrderingObject.objects.get(account=account, status="current")
+            data["import_object"] = "exist"
+
+        except ObjectDoesNotExist:
+            data["import_object"] = "none"
+
+        return Response(data=data)
+
+
+# --------------- Get Ordering Cart ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_ordering_cart(request):
+    account = request.user

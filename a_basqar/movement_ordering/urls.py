@@ -21,4 +21,9 @@ urlpatterns = [
          name="get_movement_history"),
     path('get_movement_history/<int:movement_id>', views.get_movement_history_item,
          name="get_movement_history"),
+
+   ############ MOVEMENT #############
+   path('ordering_object', views.get_current_ordering_object,
+         name="get_current_ordering_object"),
+
 ]
