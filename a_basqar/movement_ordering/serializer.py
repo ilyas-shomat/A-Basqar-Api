@@ -19,3 +19,26 @@ class MovementObjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = MovementObject
         fields = "__all__"
+
+class CreateNewMovementObjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovementObject
+        fields = ()
+
+
+class AddProdToMovementCartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MovementProduct
+        fields = ('movement_product','product_amount')
+
+class EditProductCountInMovementCartSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = MovementProduct
+        fields = ('movement_prod_id', 'product_amount')
+
+
+class MakeMovementHistorySerializer(serializers.ModelSerializer):
+    store = StoreSerializer(read_only=True)
+    class Meta:
+        model = MovementObject
+        fields = ('store', )
