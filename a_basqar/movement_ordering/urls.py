@@ -19,4 +19,6 @@ urlpatterns = [
          name="make_movement_history"),
     path('get_movement_history', views.get_movement_history,
          name="get_movement_history"),
+    path('get_movement_history/<int:movement_id>', views.get_movement_history_item,
+         name="get_movement_history"),
 ]

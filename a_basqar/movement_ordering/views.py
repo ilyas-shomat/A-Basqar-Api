@@ -206,3 +206,15 @@ def get_movement_history(request):
         movement_object = MovementObject.objects.filter(account=account, status="history")
         ser = MovementObjectSerializer(movement_object, many = True)
         return Response(ser.data)
+
+
+# --------------- Get Movement History Item ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_movement_history_item(request, movement_id):
+    account = request.user
+
+    if request.method == "GET":
+        movement_object = MovementObject.objects.get(movement_id=movement_id)
+        ser = MovementObjectSerializer(movement_object)
+        return Response(ser.data)
