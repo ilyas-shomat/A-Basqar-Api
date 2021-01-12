@@ -218,3 +218,11 @@ def get_movement_history_item(request, movement_id):
         movement_object = MovementObject.objects.get(movement_id=movement_id)
         ser = MovementObjectSerializer(movement_object)
         return Response(ser.data)
+
+
+
+######################################################################################
+# --------------- ORDERING -------------------------------------------------------------
+######################################################################################
+
+# --------------- Get Current Ordering Object ---------------
