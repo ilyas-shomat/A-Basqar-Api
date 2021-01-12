@@ -196,4 +196,13 @@ def make_movement_history(request):
         return Response(data=data)
 
 
+# --------------- Get Movement History ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_movement_history(request):
+    account = request.user
 
+    if request.method == "GET":
+        movement_object = MovementObject.objects.filter(account=account, status="history")
+        ser = MovementObjectSerializer(movement_object, many = True)
+        return Response(ser.data)

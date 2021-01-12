@@ -17,4 +17,6 @@ urlpatterns = [
          name="delete_prod_in_cart"),
     path('make_movement_history', views.make_movement_history,
          name="make_movement_history"),
+    path('get_movement_history', views.get_movement_history,
+         name="get_movement_history"),
 ]
