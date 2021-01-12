@@ -19,7 +19,8 @@ from .serializer import (
     EditProductCountInMovementCartSerializer,
     MakeMovementHistorySerializer,
     OrderingObjectSerialzer,
-    OrderingProductsSerializer
+    OrderingProductsSerializer,
+    CreateNewOrderingSerializer
 )
 
 from products.models import (
@@ -270,3 +271,30 @@ def get_ordering_cart(request):
             data["desc"] = "movement cart is empty"
 
     return Response(data)
+
+
+# --------------- Create New Ordering Cart ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def create_new_ordering_cart(request):
+    account = request.user
+
+    if request.method == "POST":
+        data = {}
+        ser = CreateNewOrderingSerializer(data=request.data)
+        if ser.is_valid():
+            try: 
+                ordering_object = OrderingObject.objects.get(account=account, status="current")
+                if ordering_object is not None:
+                    data["ordering_object"] = "exist"
+                    data["desc"] = "object already exist"
+            except ObjectDoesNotExist:
+                new_ordering_object = OrderingObject()
+                new_ordering_object.account = account
+                new_ordering_object.status = "current"
+                new_ordering_object.save()
+
+                data["movement_object"] = "created"
+                data["desc"] = "created new current movement object"
+        
+        return Response(data=data)

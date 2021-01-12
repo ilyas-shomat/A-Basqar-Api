@@ -71,9 +71,14 @@ class OrderingObjectSerialzer(serializers.ModelSerializer):
         model = OrderingObject
         fields = "__all__"
 
+
 class OrderingProductsSerializer(serializers.ModelSerializer):
     ordering_product = EachStoreProductProductSerializer(read_only=True)
-    
     class Meta: 
         model = OrderingProduct
         fields = "__all__"
+
+class CreateNewOrderingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderingObject
+        fields = ()

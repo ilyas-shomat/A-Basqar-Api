@@ -27,5 +27,7 @@ urlpatterns = [
          name="get_current_ordering_object"),
    path('ordering_cart', views.get_ordering_cart,
          name="get_ordering_cart"),
+   path('create_ordering_object', views.create_new_ordering_cart,
+         name="create_new_ordering_cart"),
 
 ]
