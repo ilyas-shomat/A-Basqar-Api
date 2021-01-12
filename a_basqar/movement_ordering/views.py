@@ -13,11 +13,16 @@ from .serializer import (
     MovementObjectSerializer,
     CreateNewMovementObjectSerializer,
     AddProdToMovementCartSerializer,
-    EditProductCountInMovementCartSerializer
+    EditProductCountInMovementCartSerializer,
+    MakeMovementHistorySerializer
 )
 
 from products.models import (
     StoreProduct
+)
+
+from account.models import (
+    Store
 )
 
 ######################################################################################
@@ -161,3 +166,34 @@ def delete_product_count_in_movement_cart(request):
             data["message"] = "failed"
             data["desc"] = "failed deleting selected movement product"
         return Response(data=data)
+
+
+# --------------- Make Movement History (Send Prods from one to other Store) ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def make_movement_history(request):
+    account = request.user
+    store = Store.objects.get(store_id=request.data["store_id"])
+    if request.method == "POST":
+        data = {}
+        try:
+            current_movement = MovementObject.objects.get(account=account, status="current")
+            current_movement.store = store
+            current_movement.status = "history"
+            current_movement.date = datetime.date(datetime.now())
+
+            ser = MakeMovementHistorySerializer(current_movement, data=request.data)
+
+            if ser.is_valid():
+                ser.save()
+                data["message"] = "success"
+                data["desc"] = "successfully changed import object from current to history"
+
+        except ObjectDoesNotExist:
+            data["message"] = "failure"
+            data["desc"] = "import object with status=current not found"
+
+        return Response(data=data)
+
+
+
