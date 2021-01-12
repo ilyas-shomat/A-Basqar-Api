@@ -352,3 +352,23 @@ def edit_product_count_in_ordering_cart(request):
             data["desc"] = "ordering_product's amount count edited"
 
         return Response(data=data)
+
+
+# --------------- Delete Product Count in Ordering Cart ---------------
+@api_view(["DELETE"])
+@permission_classes((IsAuthenticated,))
+def delete_product_count_in_ordering_cart(request):
+    ordering_product = OrderingProduct.objects.get(ordering_prod_id=request.data["ordering_prod_id"])
+
+    if request.method == "DELETE":
+        data = {}
+
+        operation = ordering_product.delete()
+
+        if operation:
+            data["message"] = "deleted"
+            data["desc"] = "selected ordering product deleted"
+        else:
+            data["message"] = "failed"
+            data["desc"] = "failed deleting selected ordering product"
+        return Response(data=data)
