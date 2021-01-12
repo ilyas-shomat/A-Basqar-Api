@@ -20,6 +20,11 @@ from account.serializers import (
     StoreSerializer
 )
 
+######################################################################################
+# --------------- MOVEMENT -------------------------------------------------------------
+######################################################################################
+
+
 class MovementObjectSerializer(serializers.ModelSerializer):
     store = StoreSerializer(read_only=True)
     class Meta:
@@ -55,8 +60,20 @@ class MakeMovementHistorySerializer(serializers.ModelSerializer):
         model = MovementObject
         fields = ('store', )
 
+
+
+######################################################################################
+# --------------- ORDERING -------------------------------------------------------------
+######################################################################################
+
 class OrderingObjectSerialzer(serializers.ModelSerializer):
     class Meta:
         model = OrderingObject
         fields = "__all__"
 
+class OrderingProductsSerializer(serializers.ModelSerializer):
+    ordering_product = EachStoreProductProductSerializer(read_only=True)
+    
+    class Meta: 
+        model = OrderingProduct
+        fields = "__all__"

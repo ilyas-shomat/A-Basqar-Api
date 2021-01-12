@@ -18,7 +18,8 @@ from .serializer import (
     AddProdToMovementCartSerializer,
     EditProductCountInMovementCartSerializer,
     MakeMovementHistorySerializer,
-    OrderingObjectSerialzer
+    OrderingObjectSerialzer,
+    OrderingProductsSerializer
 )
 
 from products.models import (
@@ -260,8 +261,10 @@ def get_ordering_cart(request):
         data = {}
         try:
             ordering_object = OrderingObject.objects.get(account=account, status="current")
-            movement_ser = OrderingObjectSerialzer(ordering_object)
-            data = {"ordering_object": movement_ser.data}
+            ordering_ser = OrderingObjectSerialzer(ordering_object)
+            ordering_products = OrderingProduct.objects.filter(ordering_object=ordering_object)
+            ordering_product_ser = OrderingProductsSerializer(ordering_products, many=True)
+            data = {"ordering_object": ordering_ser.data,  "ordering_products": ordering_product_ser.data}
         except ObjectDoesNotExist:
             data["message"] = "empty"
             data["desc"] = "movement cart is empty"
