@@ -47,3 +47,41 @@ class MovementProduct(models.Model):
 
     def __str__(self):
         return self.movement_product.__str__() + " count: " + str(self.product_amount) + " date: " + str(self.date) + " id: " + str(self.movement_prod_id)
+
+
+class OrderingObject(models.Model):
+    ordering_id = models.AutoField(primary_key=True)
+    account = models.ForeignKey(Account,
+                                on_delete=models.CASCADE,
+                                related_name='ordering_account',
+                                null=True)
+
+    status = models.CharField(max_length=255)
+    date = models.DateField(null=True)
+
+    def __str__(self):
+        return "ordering object with id: " + str(self.ordering_id) + ", status: " + self.status
+
+
+class OrderingProduct(models.Model):
+    ordering_prod_id = models.AutoField(primary_key=True)
+    account = models.ForeignKey(Account,
+                                on_delete=models.CASCADE,
+                                related_name='ordering_prod_account',
+                                null=True) 
+    
+    ordering_product = models.ForeignKey(StoreProduct,
+                                         on_delete=models.CASCADE,
+                                         related_name='ordering_product',
+                                         null=True)
+
+    ordering_object = models.ForeignKey(OrderingObject,
+                                         on_delete=models.CASCADE,
+                                         related_name='ordering_object',
+                                         null=True)
+
+    product_amount = models.IntegerField(null=True)
+    date = models.DateField(null=True)
+
+    def __str__(self):
+        return self.ordering_product.__str__() + " count: " + str(self.product_amount) + " date: " + str(self.date) + " id: " + str(self.ordering_prod_id)
