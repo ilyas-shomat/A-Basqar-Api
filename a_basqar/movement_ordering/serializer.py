@@ -106,3 +106,5 @@ class MakeOrderingHistorySerilizer(serializers.ModelSerializer):
         model = OrderingObject
         fields = ("ordering_id")
 
+
+
