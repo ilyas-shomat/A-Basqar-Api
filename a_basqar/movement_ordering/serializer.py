@@ -96,3 +96,13 @@ class EditProductCountInOrderingCartSerializer(serializers.ModelSerializer):
         model = OrderingProduct
         fields = ('ordering_prod_id', 'product_amount')
 
+class MakeOrderingOpenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderingObject
+        fields = ()
+
+class MakeOrderingHistorySerilizer(serializers.ModelSerializer):
+    class Meta: 
+        model = OrderingObject
+        fields = ("ordering_id")
+

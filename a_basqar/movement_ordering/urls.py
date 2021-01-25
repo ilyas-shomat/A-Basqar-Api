@@ -35,5 +35,9 @@ urlpatterns = [
          name="edit_product_count_in_ordering_cart"),
    path('delete_prod_in_ordering_cart', views.delete_product_count_in_ordering_cart,
          name="delete_product_count_in_ordering_cart"),
+   path('make_ordering_open', views.make_ordering_object_open,
+         name="make_ordering_object_open"),
+   path('make_ordering_history', views.make_ordering_history,
+         name="make_ordering_history"),
 
 ]
