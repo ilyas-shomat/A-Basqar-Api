@@ -442,13 +442,25 @@ def get_open_ordering_list(request):
         ser = OrderingObjectSerialzer(ordering_objects, many=True)
         return  Response(ser.data)
 
-# --------------- Get Open Ordering Item ---------------
+# --------------- Get Ordering Item ---------------
 @api_view(["GET"])
 @permission_classes((IsAuthenticated,))
-def get_open_ordering_item(request, ordering_id):
+def get_ordering_item(request, ordering_id):
     account = request.user
 
     if request.method == "GET":
         ordering_object = OrderingObject.objects.get(account=account, ordering_id=ordering_id)
         ser = OrderingObjectSerialzer(ordering_object)
         return Response(ser.data)
+
+# --------------- Get Open Ordering History  ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_ordering_history(request):
+        account = request.user
+
+        if request.method == "GET":
+            ordering_objects = OrderingObject.objects.filter(account=account, status="history")
+            ser = OrderingObjectSerialzer(ordering_objects, many=True)
+            return  Response(ser.data)
+
