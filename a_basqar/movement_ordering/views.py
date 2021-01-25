@@ -22,7 +22,8 @@ from .serializer import (
     OrderingProductsSerializer,
     CreateNewOrderingSerializer,
     AddProdToOrderingCartSerializer,
-    EditProductCountInOrderingCartSerializer
+    EditProductCountInOrderingCartSerializer,
+    MakeOrderingOpenSerializer
 )
 
 from products.models import (
@@ -197,11 +198,11 @@ def make_movement_history(request):
             if ser.is_valid():
                 ser.save()
                 data["message"] = "success"
-                data["desc"] = "successfully changed import object from current to history"
+                data["desc"] = "successfully changed movement object from current to history"
 
         except ObjectDoesNotExist:
             data["message"] = "failure"
-            data["desc"] = "import object with status=current not found"
+            data["desc"] = "movement object with status=current not found"
 
         return Response(data=data)
 
@@ -372,3 +373,44 @@ def delete_product_count_in_ordering_cart(request):
             data["message"] = "failed"
             data["desc"] = "failed deleting selected ordering product"
         return Response(data=data)
+
+
+# --------------- Make Ordering Object Open (Send Order to Orders List) ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def make_ordering_object_open(request):
+    account = request.user
+
+    if request.method == "POST":
+        data = {}
+
+        try:
+            current_ordering = OrderingObject.objects.get(account=account, status="current")
+            current_ordering.status = "open"
+            current_ordering.date = datetime.date(datetime.now())
+
+            ser = MakeOrderingOpenSerializer(current_ordering, data=request.data)
+
+            if ser.is_valid():
+                ser.save()
+                data["message"] = "success"
+                data["desc"] = "successfully changed ordering object from current to open"
+        
+        except ObjectDoesNotExist:
+            data["message"] = "failure"
+            data["desc"] = "ordering object with status=current not found"
+
+        return Response(data=data)
+
+
+# --------------- Make Ordering History (Send Order to Get New Movement) ---------------
+# @api_view(["POST"])
+# @permission_classes((IsAuthenticated,))
+# def make_ordering_history(request):
+#     account = request.user
+
+#     if request.method == "POST":
+#         data = {}
+#         try:
+#             current_ordering = OrderingObject.objects.get(account=account, status="current")
+#             current_
