@@ -441,3 +441,14 @@ def get_open_ordering_list(request):
         ordering_objects = OrderingObject.objects.filter(account=account, status="open")
         ser = OrderingObjectSerialzer(ordering_objects, many=True)
         return  Response(ser.data)
+
+# --------------- Get Open Ordering Item ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_open_ordering_item(request, ordering_id):
+    account = request.user
+
+    if request.method == "GET":
+        ordering_object = OrderingObject.objects.get(account=account, ordering_id=ordering_id)
+        ser = OrderingObjectSerialzer(ordering_object)
+        return Response(ser.data)
