@@ -101,3 +101,8 @@ class MakeOrderingOpenSerializer(serializers.ModelSerializer):
         model = OrderingObject
         fields = ()
 
+class MakeOrderingHistorySerilizer(serializers.ModelSerializer):
+    class Meta: 
+        model = OrderingObject
+        fields = ("ordering_id")
+

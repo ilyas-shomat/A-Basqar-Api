@@ -23,7 +23,8 @@ from .serializer import (
     CreateNewOrderingSerializer,
     AddProdToOrderingCartSerializer,
     EditProductCountInOrderingCartSerializer,
-    MakeOrderingOpenSerializer
+    MakeOrderingOpenSerializer,
+    MakeOrderingHistorySerilizer
 )
 
 from products.models import (
@@ -404,13 +405,28 @@ def make_ordering_object_open(request):
 
 
 # --------------- Make Ordering History (Send Order to Get New Movement) ---------------
-# @api_view(["POST"])
-# @permission_classes((IsAuthenticated,))
-# def make_ordering_history(request):
-#     account = request.user
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def make_ordering_history(request):
+    account = request.user
 
-#     if request.method == "POST":
-#         data = {}
-#         try:
-#             current_ordering = OrderingObject.objects.get(account=account, status="current")
-#             current_
+    if request.method == "POST":
+        data = {}
+
+        try:
+            current_ordering = OrderingObject.objects.get(account=account, ordering_id = request.data["ordering_id"])
+            current_ordering.status = "history"
+            current_ordering.date = datetime.date(datetime.now())
+
+            ser = MakeOrderingOpenSerializer(current_ordering, data=request.data)
+
+            if ser.is_valid():
+                ser.save()
+                data["message"] = "success"
+                data["desc"] = "successfully changed ordering object from open to history"
+        
+        except ObjectDoesNotExist:
+            data["message"] = "failure"
+            data["desc"] = "ordering object with status=current not found"
+
+        return Response(data=data)
