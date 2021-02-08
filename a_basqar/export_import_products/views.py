@@ -21,9 +21,14 @@ from .serializer import (
     AddProdToExShoppingCartSerializer,
     CreateNewExportCartObjectSerializer,
     EditProductCountInExportCartSerializer,
-    MakeImportSerializer
+    MakeImportSerializer,
+    EachStoreProductProductSerializer
 )
 from products.models import (
+    CommonCategory,
+    CommonProduct,
+    CompanyCategory,
+    CompanyProduct,
     StoreProduct
 )
 from company_management.models import (
@@ -99,6 +104,32 @@ def create_new_import_cart_object(request):
                 data["desc"] = "created new current import object"
 
         return Response(data=data)
+
+
+# --------------- Get Exact Cat Prods ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_exact_category_products(request, cat_id):
+    if request.method == "GET":
+        data = {}
+        account = request.user
+        try:
+            common_cat = CommonCategory.objects.get(category_id=cat_id)
+            print("/// common_cat:" + str(common_cat))
+            company_cat = CompanyCategory.objects.get(category_index_id=common_cat.category_index_id)
+            print("/// company_cat:" + str(common_cat))
+            store_prods = StoreProduct.objects.filter(categor=company_cat)
+            print("/// store_prods:" + str(store_prods))
+
+            ser = EachStoreProductProductSerializer(store_prods, many=True)
+            data=ser.data
+        except ObjectDoesNotExist:
+            data["message"] = "not found"
+            data["desc"] = "category not found"
+
+        return Response(data=data)
+        
+
 
 
 # --------------- Add Product to Import Cart ---------------

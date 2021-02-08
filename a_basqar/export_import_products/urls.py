@@ -42,4 +42,6 @@ urlpatterns = [
          name="get_export_history_item"),
     path('sell_new_products', views.make_export_history,
          name="make_export_history"),
+    path('get_prods/<int:cat_id>', views.get_exact_category_products,
+         name="get_exact_category_products"),
 ]
