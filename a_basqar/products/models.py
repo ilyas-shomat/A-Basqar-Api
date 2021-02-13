@@ -71,7 +71,7 @@ class CompanyProduct(models.Model):
                                         null=True)
 
     def __str__(self):
-        return self.product_name
+        return self.product_name + " id:" + str(self.product_id)
 
 
 class StoreProduct(models.Model):

@@ -50,7 +50,7 @@ class ImportProduct(models.Model):
 
 
     def __str__(self):
-        return self.import_product.__str__() + " count: " +str(self.prod_amount_in_cart) + " date: " + str(self.date)
+        return self.import_product.__str__() + " count: " +str(self.prod_amount_in_cart) + " date: " + str(self.date) + " import_pord_id: " + str(self.im_prod_id)
 
 
 class ExShoppingCartObject(models.Model):
