@@ -42,6 +42,9 @@ class Contragent(models.Model):
     phone_number = models.CharField(max_length=255, null=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="company_contragent", null=True)
 
+    def __str__(self):
+        return self.name +", id:" + str(self.contragent_id)
+
 
 @receiver(post_save, sender=Company)
 def create_auth_token(sender, instance=None, created=False, **kwargs):

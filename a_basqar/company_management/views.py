@@ -9,13 +9,16 @@ from account.serializers import AccountPropertiesSerializer
 from .models import (
     Company,
     Store,
-    AccessFunc
+    AccessFunc,
+    Contragent
 )
 from .serializers import (
     CompanySerializer,
     StoreSerializer,
-    AccessFuncsSerializer
+    AccessFuncsSerializer,
+    ContragentSerializer
 )
+
 
 ######################################################################################
 # --------------- COMPANIES -------------------------------------------------------------
@@ -187,20 +190,21 @@ def delete_one_account(request, store_id):
             data["status"] = "delete failed"
         return Response(data=data)
 
-# @api_view(["GET"])
-# @permission_classes((IsAuthenticated,))
-# def get_post_companies(request):
-#     companies = Company.objects.all()
-#     ser = CompanySerializer(companies, many=True)
-#     return Response(ser.data)
-#
-#
-# @api_view(["GET"])
-# @permission_classes((IsAuthenticated,))
-# def get_stores(request, company_id):
-#     # cid = request.GET.get("pk")
-#     company = Company.objects.get(company_id=company_id)
-#     stores = Store.objects.filter(company=company)
-#     ser = StoreSerializer(stores, many=True)
-#     str = request.data.get("store")
-#     return Response(ser.data)
+
+######################################################################################
+# --------------- CONTRLAGENTS -------------------------------------------------------------
+######################################################################################
+
+
+# --------------- Get Users Contragent ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_users_contrs(request):
+    account = request.user
+
+    if request.method == "GET":
+        company = Company.objects.get(company_id=account.company.company_id)
+        contragent = Contragent.objects.filter(company=company)
+        ser = ContragentSerializer(contragent, many=True)
+        return Response(ser.data)
+
