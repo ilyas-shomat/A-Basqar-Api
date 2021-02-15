@@ -39,5 +39,11 @@ urlpatterns = [
          name="make_ordering_object_open"),
    path('make_ordering_history', views.make_ordering_history,
          name="make_ordering_history"),
+   path('get_all_open_ordering', views.get_open_ordering_list,
+         name="get_open_ordering_list"),
+   path('get_ordering_hsitory', views.get_ordering_history,
+         name="get_ordering_history"),
+   path('get_ordering_item/<int:ordering_id>', views.get_ordering_item,
+         name="get_open_ordering_item"),
 
 ]

@@ -23,7 +23,7 @@ class CommonCategory(models.Model):
                                          null=True)
 
     def __str__(self):
-        return self.category_name + " " + str(self.category_level)
+        return self.category_name + " " + str(self.category_level) + ", id:" + str(self.category_id)
 
 
 class CompanyCategory(models.Model):
@@ -38,7 +38,7 @@ class CompanyCategory(models.Model):
     category_index_id = models.CharField(max_length=255, null=True)
 
     def __str__(self):
-        return self.category_name + " " + str(self.category_level)
+        return self.category_name + " , category level: " + str(self.category_level) + ", id:" + str(self.category_id)
 
 
 class CommonProduct(models.Model):
@@ -71,11 +71,15 @@ class CompanyProduct(models.Model):
                                         null=True)
 
     def __str__(self):
-        return self.product_name
+        return self.product_name + " id:" + str(self.product_id)
 
 
 class StoreProduct(models.Model):
     product_id = models.AutoField(primary_key=True)
+    categor = models.ForeignKey(CompanyCategory,
+                                         on_delete=models.CASCADE,
+                                         related_name='store_product_category',
+                                         null=True)
     company_product = models.ForeignKey(CompanyProduct,
                                         on_delete=models.CASCADE,
                                         related_name='company_product',
@@ -87,7 +91,7 @@ class StoreProduct(models.Model):
                                  null=True)
 
     def __str__(self):
-        return self.company_product.__str__() + "id: " + str(self.product_id)
+        return self.company_product.__str__() + " id: " + str(self.product_id)
 
 @receiver(post_save, sender=CompanyProduct)
 def create_auth_token(sender, instance=None, created=False, **kwargs):

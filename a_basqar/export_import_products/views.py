@@ -21,9 +21,14 @@ from .serializer import (
     AddProdToExShoppingCartSerializer,
     CreateNewExportCartObjectSerializer,
     EditProductCountInExportCartSerializer,
-    MakeImportSerializer
+    MakeImportSerializer,
+    EachStoreProductProductSerializer
 )
 from products.models import (
+    CommonCategory,
+    CommonProduct,
+    CompanyCategory,
+    CompanyProduct,
     StoreProduct
 )
 from company_management.models import (
@@ -99,6 +104,29 @@ def create_new_import_cart_object(request):
                 data["desc"] = "created new current import object"
 
         return Response(data=data)
+
+
+# --------------- Get Exact Cat Prods ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_exact_category_products(request, cat_id):
+    if request.method == "GET":
+        data = {}
+        account = request.user
+        try:
+            common_cat = CommonCategory.objects.get(category_id=cat_id)
+            company_cat = CompanyCategory.objects.get(category_index_id=common_cat.category_index_id)
+            store_prods = StoreProduct.objects.filter(categor=company_cat)
+
+            ser = EachStoreProductProductSerializer(store_prods, many=True)
+            data=ser.data
+        except ObjectDoesNotExist:
+            data["message"] = "not found"
+            data["desc"] = "category not found"
+
+        return Response(data=data)
+        
+
 
 
 # --------------- Add Product to Import Cart ---------------
@@ -231,8 +259,11 @@ def get_import_history_item(request, import_id):
 
     if request.method == "GET":
         import_history_objects = ImShoppingCartObject.objects.get(im_shopping_cart_id=import_id)
-        ser = ImShoppingCartObjSerializer(import_history_objects)
-        return Response(ser.data)
+        import_products = ImportProduct.objects.filter(im_shopping_car_obj=import_history_objects)
+        shopping_cart_ser = ImShoppingCartObjSerializer(import_history_objects)
+        im_prods_ser = ImportProductsSerializer(import_products, many=True)
+        data = {"shopping_cart_obj": shopping_cart_ser.data, "import_products": im_prods_ser.data}
+        return Response(data)
 
 ######################################################################################
 # --------------- EXPORT SHOPPING CART -------------------------------------------------------------
