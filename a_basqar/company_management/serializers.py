@@ -29,3 +29,8 @@ class ContragentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contragent
         fields = "__all__"
+
+class EditContrSerialiser(serializers.ModelSerializer):
+    class Meta:
+        model = Contragent
+        fields = ('name','bin','phone_number')

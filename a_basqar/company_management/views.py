@@ -2,6 +2,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.core.exceptions import ObjectDoesNotExist
+
 
 from account.models import Account
 from account.serializers import AccountPropertiesSerializer
@@ -16,7 +18,8 @@ from .serializers import (
     CompanySerializer,
     StoreSerializer,
     AccessFuncsSerializer,
-    ContragentSerializer
+    ContragentSerializer,
+    EditContrSerialiser
 )
 
 
@@ -208,3 +211,31 @@ def get_users_contrs(request):
         ser = ContragentSerializer(contragent, many=True)
         return Response(ser.data)
 
+# --------------- Edit Users Contragent ---------------
+@api_view(["PUT"])
+@permission_classes((IsAuthenticated,))
+def edit_user_contr(request):
+    account = request.data
+
+    if request.method == "PUT":
+        data = {}
+        try:
+            contragent = Contragent.objects.get(contragent_id=request.data["contragent_id"])
+        except ObjectDoesNotExist:
+            data["message"] = "failure"
+            data["desc"] = "contragent not found"
+        
+        # contragent.name = request.data["name"]
+        # contragent.bin = request.data["bin"]
+        # contragent.phone_number = request.data["phone_number"]
+        ser = EditContrSerialiser(contragent, data=request.data, partial=True)
+
+        if ser.is_valid():
+            ser.save()
+            data["message"] = "success"
+            data["desc"] = "contragent edited successfully"
+        
+        return Response(data=data)
+
+
+        
