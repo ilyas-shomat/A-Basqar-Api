@@ -215,7 +215,7 @@ def get_users_contrs(request):
 @api_view(["PUT"])
 @permission_classes((IsAuthenticated,))
 def edit_user_contr(request):
-    account = request.data
+    account = request.user
 
     if request.method == "PUT":
         data = {}
@@ -237,5 +237,22 @@ def edit_user_contr(request):
         
         return Response(data=data)
 
+# --------------- Add User Contragent ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def add_user_contr(request):
+    account = request.user
 
+    if request.method == "POST":
+        data = {}
+        contr = Contragent()
+        contr.company = account.company
+        ser = ContragentSerializer(contr, request.data)
+
+        if ser.is_valid():
+            ser.save()
+            data["message"] = "success"
+            data["desc"] = "contragent added successfully"
+    
+    return Response(data=data)
         

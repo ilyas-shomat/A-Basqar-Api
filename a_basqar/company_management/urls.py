@@ -20,5 +20,7 @@ urlpatterns = [
     ############ Contragent #############
     path('contragent', views.get_users_contrs, name="get_users_contrs"),
     path('contragent/edit', views.edit_user_contr, name="edit_user_contr"),
+    path('contragent/add', views.add_user_contr, name="add_user_contr"),
+
 
 ]
