@@ -452,5 +452,8 @@ def get_export_history_item(request, export_id):
 
     if request.method == "GET":
         export_history_objects = ExShoppingCartObject.objects.get(ex_shopping_cart_id=export_id)
-        ser = ImShoppingCartObjSerializer(export_history_objects)
-        return Response(ser.data)
+        export_products = ExportProduct.objects.filter(ex_shopping_car_obj=export_history_objects)
+        shopping_cart_ser = ExShoppingCartObjSerializer(export_history_objects)
+        im_prods_ser = ExportProductsSerializer(export_products, many=True)
+        data = {"shopping_cart_obj": shopping_cart_ser.data, "export_products": im_prods_ser.data}
+        return Response(data)
