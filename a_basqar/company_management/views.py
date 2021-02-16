@@ -2,6 +2,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.core.exceptions import ObjectDoesNotExist
+
 
 from account.models import Account
 from account.serializers import AccountPropertiesSerializer
@@ -9,13 +11,17 @@ from account.serializers import AccountPropertiesSerializer
 from .models import (
     Company,
     Store,
-    AccessFunc
+    AccessFunc,
+    Contragent
 )
 from .serializers import (
     CompanySerializer,
     StoreSerializer,
-    AccessFuncsSerializer
+    AccessFuncsSerializer,
+    ContragentSerializer,
+    EditContrSerialiser
 )
+
 
 ######################################################################################
 # --------------- COMPANIES -------------------------------------------------------------
@@ -187,20 +193,66 @@ def delete_one_account(request, store_id):
             data["status"] = "delete failed"
         return Response(data=data)
 
-# @api_view(["GET"])
-# @permission_classes((IsAuthenticated,))
-# def get_post_companies(request):
-#     companies = Company.objects.all()
-#     ser = CompanySerializer(companies, many=True)
-#     return Response(ser.data)
-#
-#
-# @api_view(["GET"])
-# @permission_classes((IsAuthenticated,))
-# def get_stores(request, company_id):
-#     # cid = request.GET.get("pk")
-#     company = Company.objects.get(company_id=company_id)
-#     stores = Store.objects.filter(company=company)
-#     ser = StoreSerializer(stores, many=True)
-#     str = request.data.get("store")
-#     return Response(ser.data)
+
+######################################################################################
+# --------------- CONTRLAGENTS -------------------------------------------------------------
+######################################################################################
+
+
+# --------------- Get Users Contragent ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_users_contrs(request):
+    account = request.user
+
+    if request.method == "GET":
+        company = Company.objects.get(company_id=account.company.company_id)
+        contragent = Contragent.objects.filter(company=company)
+        ser = ContragentSerializer(contragent, many=True)
+        return Response(ser.data)
+
+# --------------- Edit Users Contragent ---------------
+@api_view(["PUT"])
+@permission_classes((IsAuthenticated,))
+def edit_user_contr(request):
+    account = request.user
+
+    if request.method == "PUT":
+        data = {}
+        try:
+            contragent = Contragent.objects.get(contragent_id=request.data["contragent_id"])
+        except ObjectDoesNotExist:
+            data["message"] = "failure"
+            data["desc"] = "contragent not found"
+        
+        # contragent.name = request.data["name"]
+        # contragent.bin = request.data["bin"]
+        # contragent.phone_number = request.data["phone_number"]
+        ser = EditContrSerialiser(contragent, data=request.data, partial=True)
+
+        if ser.is_valid():
+            ser.save()
+            data["message"] = "success"
+            data["desc"] = "contragent edited successfully"
+        
+        return Response(data=data)
+
+# --------------- Add User Contragent ---------------
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def add_user_contr(request):
+    account = request.user
+
+    if request.method == "POST":
+        data = {}
+        contr = Contragent()
+        contr.company = account.company
+        ser = ContragentSerializer(contr, request.data)
+
+        if ser.is_valid():
+            ser.save()
+            data["message"] = "success"
+            data["desc"] = "contragent added successfully"
+    
+    return Response(data=data)
+        

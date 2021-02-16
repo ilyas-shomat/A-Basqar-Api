@@ -17,4 +17,10 @@ urlpatterns = [
     path('company/users/accesses/<int:account_id>', views.get_users_access_funcs, name="get_users_access_funcs"),
     path('company/users/accesses/edit/<int:account_id>', views.edit_users_access_funcs, name="edit_users_access_funcs"),
 
+    ############ Contragent #############
+    path('contragent', views.get_users_contrs, name="get_users_contrs"),
+    path('contragent/edit', views.edit_user_contr, name="edit_user_contr"),
+    path('contragent/add', views.add_user_contr, name="add_user_contr"),
+
+
 ]
