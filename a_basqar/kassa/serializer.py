@@ -11,6 +11,9 @@ from export_import_products.serializer import (
     ExShoppingCartObjSerializer,
     ImShoppingCartObjSerializer
 )
+from company_management.models import (
+    Contragent
+)
 
 
 # ///////////////////////// INCOME KASSA //////////////////////
@@ -22,7 +25,7 @@ class IncomeKassaObjectSerializer(serializers.ModelSerializer):
 
 
 class GetIncomeKassaHistoryObjectsSerializer(serializers.ModelSerializer):
-    # contragent = ContragentSerializer(read_only=True)
+    contragent = ContragentSerializer(read_only=True)
     export_object = ExShoppingCartObjSerializer(read_only=True)
 
     class Meta:
@@ -52,7 +55,7 @@ class ExpenseKassaObjectSerializer(serializers.ModelSerializer):
 
 class GetExpenseKassaHistoryObjectsSerializer(serializers.ModelSerializer):
     import_object = ImShoppingCartObjSerializer(read_only=True)
-
+    contragent = ContragentSerializer(read_only=True)
     class Meta:
         model = ExpenseKassaObject
         fields = "__all__"
