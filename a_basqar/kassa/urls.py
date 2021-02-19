@@ -11,6 +11,8 @@ urlpatterns = [
          name="create_new_income_kassa_export"),
     path('create_new_income_contr', views.create_new_income_kassa_contr,
          name="create_new_income_kassa_contr"),
+    path('income_history/<int:history_id>', views.get_income_kassa_item,
+         name="get_expense_history_item"),
 
     ############  EXPENSE KASSA #############
     path('expense_kassa_history', views.get_expense_kassa_history_objects,
@@ -19,5 +21,7 @@ urlpatterns = [
          name="create_new_expense_kassa_import"),
     path('create_new_expense_contr', views.create_new_expense_kassa_contr,
          name="create_new_expense_kassa_contr"),
+    path('expense_history/<int:history_id>', views.get_expense_history_item,
+         name="get_expense_history_item"),
 
 ]

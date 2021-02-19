@@ -56,6 +56,17 @@ def get_income_kassa_history_objects(request):
         return Response(ser.data)
 
 
+# --------------- Get Income Kassa History Item ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_income_kassa_item(request, history_id):
+    user = request.user
+
+    if request.method == "GET":
+        income_object = IncomeKassaObject.objects.get(account=user, income_id=history_id)
+        ser = GetIncomeKassaHistoryObjectsSerializer(income_object)
+        return Response(ser.data)
+
 # --------------- Create New Income Kassa History Objects Wit Contragent ---------------
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
@@ -79,8 +90,8 @@ def create_new_income_kassa_contr(request):
                 cont_ser.save()
                 data["message"] = "success"
                 data["desc"] = "successfully created new kassa object to history"
-                data["data"] = cont_ser.data
-                data["test_data"] = test_ser.data
+                # data["data"] = cont_ser.data
+                # data["test_data"] = test_ser.data
             else:
                 data["message"] = "not valid ser"
                 data["desc"] = cont_ser.data
@@ -108,7 +119,7 @@ def create_new_income_kassa_export(request):
 
             income_kassa_obj = create_new_income_kassa_object(fact_cash=request.data["fact_cash"],
                                                               cash_sum=cash_sum,
-                                                              contragent=None,
+                                                              contragent=contragent,
                                                               export_object=export_object,
                                                               comment=request.data["comment"],
                                                               account=user
@@ -119,8 +130,8 @@ def create_new_income_kassa_export(request):
                 export_ser.save()
                 data["message"] = "success"
                 data["desc"] = "successfully created new kassa object to history"
-                data["data"] = export_ser.data
-                data["test_data"] = test_ser.data
+                # data["data"] = export_ser.data
+                # data["test_data"] = test_ser.data
             else:
                 data["message"] = "not valid ser"
                 data["desc"] = export_ser.data
@@ -161,6 +172,16 @@ def get_expense_kassa_history_objects(request):
         ser = GetExpenseKassaHistoryObjectsSerializer(expense_objects, many=True)
         return Response(ser.data)
 
+# --------------- Get Expense Kassa History Item ---------------
+@api_view(["GET"])
+@permission_classes((IsAuthenticated,))
+def get_expense_history_item(request, history_id):
+    account = request.user
+
+    if request.method == "GET":
+        expense_object = ExpenseKassaObject.objects.get(account=account, expense_id=history_id)
+        ser = GetExpenseKassaHistoryObjectsSerializer(expense_object)
+        return Response(ser.data)
 
 # --------------- Create New Expense Kassa History Objects Wit Contragent ---------------
 @api_view(["POST"])
@@ -185,8 +206,8 @@ def create_new_expense_kassa_contr(request):
                 cont_ser.save()
                 data["message"] = "success"
                 data["desc"] = "successfully created new kassa object to history"
-                data["data"] = cont_ser.data
-                data["test_data"] = test_ser.data
+                # data["data"] = cont_ser.data
+                # data["test_data"] = test_ser.data
             else:
                 data["message"] = "not valid ser"
                 data["desc"] = cont_ser.data
@@ -214,7 +235,7 @@ def create_new_expense_kassa_import(request):
 
             import_kassa_obj = create_new_expense_kassa_object(fact_cash=request.data["fact_cash"],
                                                               cash_sum=cash_sum,
-                                                              contragent=None,
+                                                              contragent=contragent,
                                                               import_object=import_object,
                                                               comment=request.data["comment"],
                                                               account=user
@@ -225,8 +246,8 @@ def create_new_expense_kassa_import(request):
                 export_ser.save()
                 data["message"] = "success"
                 data["desc"] = "successfully created new kassa object to history"
-                data["data"] = export_ser.data
-                data["test_data"] = test_ser.data
+                # data["data"] = export_ser.data
+                # data["test_data"] = test_ser.data
             else:
                 data["message"] = "not valid ser"
                 data["desc"] = export_ser.data
